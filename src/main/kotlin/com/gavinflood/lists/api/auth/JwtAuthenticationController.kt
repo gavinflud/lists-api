@@ -1,6 +1,6 @@
 package com.gavinflood.lists.api.auth
 
-import com.gavinflood.lists.api.service.AppUserDetailsService
+import com.gavinflood.lists.api.service.AppUserService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,7 +24,7 @@ class JwtAuthenticationController(
 
     private val authenticationManager: AuthenticationManager,
     private val jwtUtil: JwtUtil,
-    private val userDetailsService: AppUserDetailsService
+    private val userDetailsService: AppUserService
 
 ) {
 

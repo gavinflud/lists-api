@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -29,9 +30,17 @@ class AppUser(
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    val roles: MutableSet<Role> = mutableSetOf()
+    val roles: MutableSet<Role> = mutableSetOf(),
 
-) : BaseEntity(), UserDetails {
+    @ManyToMany(mappedBy = "members")
+    @JsonIgnore
+    val teams: MutableSet<Team> = mutableSetOf(),
+
+    // TODO: Change this to true once activation logic is complete
+    @Column(name = "is_locked")
+    var isLocked: Boolean = false,
+
+    ) : BaseEntity(), UserDetails {
 
     /**
      * @return the permissions granted to the user
@@ -64,12 +73,10 @@ class AppUser(
     }
 
     /**
-     * TODO: Add ability to lock accounts
-     *
      * @return true if the user's account is not locked
      */
     override fun isAccountNonLocked(): Boolean {
-        return true
+        return !isLocked
     }
 
     /**

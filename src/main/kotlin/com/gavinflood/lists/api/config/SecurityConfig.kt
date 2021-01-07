@@ -2,7 +2,7 @@ package com.gavinflood.lists.api.config
 
 import com.gavinflood.lists.api.auth.JwtAuthenticationEntryPoint
 import com.gavinflood.lists.api.auth.JwtRequestFilter
-import com.gavinflood.lists.api.service.AppUserDetailsService
+import com.gavinflood.lists.api.service.AppUserService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -32,7 +32,7 @@ class SecurityConfig(
 
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val jwtRequestFilter: JwtRequestFilter,
-    private val userDetailsService: AppUserDetailsService
+    private val userService: AppUserService
 
 ) : WebSecurityConfigurerAdapter() {
 
@@ -59,7 +59,7 @@ class SecurityConfig(
      * @param auth manager to configure
      */
     override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder())
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
     }
 
     /**

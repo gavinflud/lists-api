@@ -12,6 +12,6 @@ import java.util.*
 @Repository
 interface AppUserRepository : JpaRepository<AppUser, Long> {
 
-    fun findDistinctByCredential(credential: Credential): Optional<AppUser>
+    fun findDistinctByCredentialAndRetiredIsFalse(credential: Credential): Optional<AppUser>
 
 }

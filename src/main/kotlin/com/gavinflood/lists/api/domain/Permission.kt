@@ -12,7 +12,7 @@ import javax.persistence.ManyToMany
 @Entity(name = "permissions")
 class Permission(
 
-    @Column(name = "code")
+    @Column(name = "code", unique = true)
     var code: String,
 
     @Column(name = "description")

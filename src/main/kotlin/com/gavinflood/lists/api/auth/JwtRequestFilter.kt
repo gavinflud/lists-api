@@ -1,6 +1,6 @@
 package com.gavinflood.lists.api.auth
 
-import com.gavinflood.lists.api.service.AppUserDetailsService
+import com.gavinflood.lists.api.service.AppUserService
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.SignatureException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse
 @Component
 class JwtRequestFilter(
 
-    private val appUserDetailsService: AppUserDetailsService,
+    private val appUserDetailsService: AppUserService,
     private val jwtUtil: JwtUtil
 
 ) : OncePerRequestFilter() {

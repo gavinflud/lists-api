@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.domain
 
+import java.util.*
 import javax.persistence.*
 
 /**
@@ -12,5 +13,22 @@ abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     val id: Long = 0
+
+    @Column(name = "created_date")
+    val createdDate = Date()
+
+    @Column(name = "retired")
+    var retired = false
+
+    @Column(name = "retired_date")
+    var retiredDate: Date? = null
+
+    /**
+     * Retire the row.
+     */
+    fun retire() {
+        retired = true
+        retiredDate = Date()
+    }
 
 }

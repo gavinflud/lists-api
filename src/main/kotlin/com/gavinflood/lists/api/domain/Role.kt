@@ -10,10 +10,10 @@ import javax.persistence.*
 @Entity(name = "roles")
 class Role(
 
-    @Column
+    @Column(name = "code", unique = true)
     var code: String,
 
-    @Column
+    @Column(name = "description")
     var description: String,
 
     @ManyToMany
