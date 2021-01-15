@@ -6,6 +6,8 @@ import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.repository.RoleRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 /**
@@ -28,6 +30,26 @@ class RoleService(private val roleRepository: RoleRepository) {
             logger.warn("Could not find role with code '$code'")
             NoMatchFoundException("Could not find role with code '$code'")
         }
+    }
+
+    /**
+     * Find multiple roles matching a set of codes.
+     *
+     * @param codes identifies the roles to find
+     * @return the set of roles matching the codes
+     */
+    fun findMultiple(codes: Set<String>): Set<Role> {
+        return roleRepository.findAllByCodeInAndRetiredIsFalse(codes)
+    }
+
+    /**
+     * Find all roles.
+     *
+     * @param pageable defines the page number and results per page
+     * @return a page of roles
+     */
+    fun findAll(pageable: Pageable): Page<Role> {
+        return roleRepository.findAllByRetiredIsFalse(pageable)
     }
 
     /**

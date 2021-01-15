@@ -6,6 +6,8 @@ import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.repository.PermissionRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 /**
@@ -28,6 +30,16 @@ class PermissionService(private val permissionRepository: PermissionRepository) 
             logger.warn("Could not find permission with code '$code'")
             NoMatchFoundException("Could not find permission with code '$code'")
         }
+    }
+
+    /**
+     * Find all permissions.
+     *
+     * @param pageable defines the page number and results per page
+     * @return a page of permissions
+     */
+    fun findAll(pageable: Pageable): Page<Permission> {
+        return permissionRepository.findAllByRetiredIsFalse(pageable)
     }
 
     /**

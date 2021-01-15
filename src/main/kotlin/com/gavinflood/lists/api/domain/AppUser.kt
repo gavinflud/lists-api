@@ -23,7 +23,7 @@ class AppUser(
     @JoinColumn(name = "credential_id", referencedColumnName = "id")
     var credential: Credential,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",
         joinColumns = [JoinColumn(name = "user_id")],
@@ -38,6 +38,7 @@ class AppUser(
 
     // TODO: Change this to true once activation logic is complete
     @Column(name = "is_locked")
+    @JsonIgnore
     var isLocked: Boolean = false,
 
     ) : BaseEntity(), UserDetails {
@@ -45,6 +46,7 @@ class AppUser(
     /**
      * @return the permissions granted to the user
      */
+    @JsonIgnore
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return roles.flatMap { it.permissions }.map { SimpleGrantedAuthority(it.code) }
     }
@@ -52,6 +54,7 @@ class AppUser(
     /**
      * @return the user's password
      */
+    @JsonIgnore
     override fun getPassword(): String {
         return credential.password
     }
@@ -59,6 +62,7 @@ class AppUser(
     /**
      * @return the user's email address
      */
+    @JsonIgnore
     override fun getUsername(): String {
         return credential.emailAddress
     }
@@ -68,6 +72,7 @@ class AppUser(
      *
      * @return true if the user's account is active
      */
+    @JsonIgnore
     override fun isAccountNonExpired(): Boolean {
         return true
     }
@@ -75,6 +80,7 @@ class AppUser(
     /**
      * @return true if the user's account is not locked
      */
+    @JsonIgnore
     override fun isAccountNonLocked(): Boolean {
         return !isLocked
     }
@@ -84,6 +90,7 @@ class AppUser(
      *
      * @return true if the user's credentials have not expired
      */
+    @JsonIgnore
     override fun isCredentialsNonExpired(): Boolean {
         return true
     }
@@ -93,6 +100,7 @@ class AppUser(
      *
      * @return true if the user's account is enabled
      */
+    @JsonIgnore
     override fun isEnabled(): Boolean {
         return true
     }

@@ -16,7 +16,7 @@ class Role(
     @Column(name = "description")
     var description: String,
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "role_permissions",
         joinColumns = [JoinColumn(name = "role_id")],

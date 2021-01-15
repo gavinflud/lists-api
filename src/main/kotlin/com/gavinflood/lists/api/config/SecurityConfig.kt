@@ -32,7 +32,8 @@ class SecurityConfig(
 
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val jwtRequestFilter: JwtRequestFilter,
-    private val userService: AppUserService
+    private val userService: AppUserService,
+    private val passwordEncoder: PasswordEncoder
 
 ) : WebSecurityConfigurerAdapter() {
 
@@ -54,12 +55,12 @@ class SecurityConfig(
     }
 
     /**
-     * Configure the authentication manager to use the custom [AppUserDetailsService] and [BCryptPasswordEncoder].
+     * Configure the authentication manager to use the custom [AppUserService] and [BCryptPasswordEncoder].
      *
      * @param auth manager to configure
      */
     override fun configure(auth: AuthenticationManagerBuilder) {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder())
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder)
     }
 
     /**
@@ -70,16 +71,6 @@ class SecurityConfig(
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
-    }
-
-    /**
-     * Create the default password encoder.
-     *
-     * @return a BCrypt password encoder
-     */
-    @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder()
     }
 
     /**

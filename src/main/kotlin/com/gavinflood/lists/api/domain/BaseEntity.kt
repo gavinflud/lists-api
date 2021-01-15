@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import java.util.*
 import javax.persistence.*
 
@@ -15,12 +16,15 @@ abstract class BaseEntity {
     val id: Long = 0
 
     @Column(name = "created_date")
+    @JsonIgnore
     val createdDate = Date()
 
     @Column(name = "retired")
+    @JsonIgnore
     var retired = false
 
     @Column(name = "retired_date")
+    @JsonIgnore
     var retiredDate: Date? = null
 
     /**
