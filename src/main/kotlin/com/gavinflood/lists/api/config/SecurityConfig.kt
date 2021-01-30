@@ -47,7 +47,7 @@ class SecurityConfig(
             .cors().and()
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers("/api/authenticate").permitAll()
+            .antMatchers("/api/authenticate/**").permitAll()
             .anyRequest().authenticated().and()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
@@ -86,7 +86,6 @@ class SecurityConfig(
         configuration.allowedOrigins = singletonList(CorsConfiguration.ALL)
         configuration.allowedMethods = singletonList(CorsConfiguration.ALL)
         configuration.allowedHeaders = singletonList(CorsConfiguration.ALL)
-        configuration.allowCredentials = true
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source

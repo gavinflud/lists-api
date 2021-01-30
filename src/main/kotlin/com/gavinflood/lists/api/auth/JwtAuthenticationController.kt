@@ -34,17 +34,40 @@ class JwtAuthenticationController(
      * Authenticate a set of credentials and produce a JWT.
      *
      * @param request body containing the username and password
+     * @return a JWT if successfully authenticated and a 401 Unauthorized error code otherwise
      */
     @PostMapping
     fun authenticate(@RequestBody request: JwtAuthenticationRequest): ResponseEntity<JwtResponse> {
         return try {
             authenticationManager.authenticate(UsernamePasswordAuthenticationToken(request.username, request.password))
             val userDetails = userDetailsService.loadUserByUsername(request.username)
-            val token = jwtUtil.generateToken(userDetails)
-            ResponseEntity.ok(JwtResponse(token))
+            val accessToken = jwtUtil.generateAccessToken(userDetails)
+            val refreshToken = jwtUtil.generateRefreshToken(userDetails)
+            ResponseEntity.ok(JwtResponse(accessToken, refreshToken))
         } catch (exception: Exception) {
-            logger.warn("'${request.username}' failed to authenticate due to '${exception.message}'", exception)
-            ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+            logger.warn("'${request.username}' failed to authenticate due to '${exception.message}'")
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        }
+    }
+
+    /**
+     * Attempt to refresh an access token using a refresh token.
+     *
+     * @param request body containing the refresh token
+     * @return a JWT if successfully refreshed and a 401 Unauthorized error code otherwise
+     */
+    @PostMapping("/refresh")
+    fun refresh(@RequestBody request: JwtRefreshRequest): ResponseEntity<JwtResponse> {
+
+        return try {
+            val username = jwtUtil.getUsernameFromToken(request.refreshToken)
+            val userDetails = userDetailsService.loadUserByUsername(username)
+            val accessToken = jwtUtil.generateAccessToken(userDetails)
+            val refreshToken = jwtUtil.generateRefreshToken(userDetails)
+            ResponseEntity.ok(JwtResponse(accessToken, refreshToken))
+        } catch (exception: Exception) {
+            logger.warn("'${request.refreshToken}' failed to authenticate due to '${exception.message}'")
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         }
     }
 
@@ -59,8 +82,16 @@ class JwtAuthenticationController(
 data class JwtAuthenticationRequest(val username: String, val password: String)
 
 /**
+ * Simple class to store a request with the refresh token as the body.
+ *
+ * @param refreshToken the refresh token
+ */
+data class JwtRefreshRequest(val refreshToken: String)
+
+/**
  * Simple class to store a response with the user's JWT as the body.
  *
- * @param token the JWT that the user can use for authentication
+ * @param accessToken the JWT that the user can use for authentication
+ * @param refreshToken the JWT that the user can use to refresh their access token
  */
-data class JwtResponse(val token: String)
+data class JwtResponse(val accessToken: String, val refreshToken: String)
