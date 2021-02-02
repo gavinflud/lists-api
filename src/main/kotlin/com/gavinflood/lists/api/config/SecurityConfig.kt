@@ -5,6 +5,7 @@ import com.gavinflood.lists.api.auth.JwtRequestFilter
 import com.gavinflood.lists.api.service.AppUserService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
@@ -48,6 +49,7 @@ class SecurityConfig(
             .csrf().disable()
             .authorizeRequests()
             .antMatchers("/api/authenticate/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/users").permitAll()
             .anyRequest().authenticated().and()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
