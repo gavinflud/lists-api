@@ -36,6 +36,8 @@ class AppUserController(private val appUserService: AppUserService) {
     /**
      * Find a user.
      *
+     * TODO: Don't return a user that isn't the current user unless elevated privileges exist
+     *
      * @param id identifies the user
      * @return the user if found
      */

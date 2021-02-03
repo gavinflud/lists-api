@@ -8,6 +8,7 @@ import com.gavinflood.lists.api.exception.UsernameAlreadyExistsException
 import com.gavinflood.lists.api.repository.AppUserRepository
 import com.gavinflood.lists.api.repository.CredentialRepository
 import org.slf4j.LoggerFactory
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -119,7 +120,7 @@ class AppUserService(
      * Retire an existing user.
      *
      * @param id identifies the user
-     * @throws UsernameNotFoundException if a user with that ID was not found
+     * @throws NoMatchFoundException if a user with that ID was not found
      */
     fun retire(id: Long) {
         try {
@@ -139,6 +140,7 @@ class AppUserService(
      * @param id identifies the user
      * @param roles the complete set of roles the user should have
      * @return the updated user
+     * @throws NoMatchFoundException if a user with that ID was not found
      */
     fun updateRoles(id: Long, roles: Set<Role>): AppUser {
         try {
@@ -151,6 +153,14 @@ class AppUserService(
             logger.warn("Cannot update roles for user as none exists with the ID '$id'")
             throw exception
         }
+    }
+
+    /**
+     * @return the current authenticated user
+     */
+    fun getCurrentAuthenticatedUser(): AppUser {
+        val currentUsername = SecurityContextHolder.getContext().authentication.name
+        return loadUserByUsername(currentUsername) as AppUser
     }
 
 }

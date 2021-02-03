@@ -22,6 +22,7 @@ class Team(
     val members: MutableSet<AppUser> = mutableSetOf(),
 
     @OneToMany(mappedBy = "team")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     val boards: MutableSet<Board> = mutableSetOf()
 
 ) : BaseEntity()
