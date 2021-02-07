@@ -8,6 +8,7 @@ import com.gavinflood.lists.api.exception.UsernameAlreadyExistsException
 import com.gavinflood.lists.api.repository.AppUserRepository
 import com.gavinflood.lists.api.repository.CredentialRepository
 import org.slf4j.LoggerFactory
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -103,6 +104,7 @@ class AppUserService(
      * @return the persisted user
      * @throws NoMatchFoundException if a user with that ID was not found
      */
+    @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #id)")
     fun update(id: Long, updatedUser: AppUser): AppUser {
         try {
             val user = findById(id)
@@ -122,6 +124,7 @@ class AppUserService(
      * @param id identifies the user
      * @throws NoMatchFoundException if a user with that ID was not found
      */
+    @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #id)")
     fun retire(id: Long) {
         try {
             val user = findById(id)
@@ -142,6 +145,7 @@ class AppUserService(
      * @return the updated user
      * @throws NoMatchFoundException if a user with that ID was not found
      */
+    @PreAuthorize("hasAuthority('admin')")
     fun updateRoles(id: Long, roles: Set<Role>): AppUser {
         try {
             val user = findById(id)

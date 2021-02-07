@@ -3,10 +3,13 @@ package com.gavinflood.lists.api.service
 import com.gavinflood.lists.api.domain.AppUser
 import com.gavinflood.lists.api.domain.Team
 import com.gavinflood.lists.api.exception.NoMatchFoundException
+import com.gavinflood.lists.api.exception.NotAuthorizedException
 import com.gavinflood.lists.api.repository.TeamRepository
+import com.gavinflood.lists.api.security.UserSecurity
 import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
 
 /**
@@ -16,7 +19,8 @@ import org.springframework.stereotype.Service
 class TeamService(
 
     private val teamRepository: TeamRepository,
-    private val appUserService: AppUserService
+    private val appUserService: AppUserService,
+    private val userSecurity: UserSecurity
 
 ) {
 
@@ -71,6 +75,7 @@ class TeamService(
      * @return a paginated list of teams the user is a member of
      * @throws NoMatchFoundException if a user with that ID was not found
      */
+    @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #userId)")
     fun findTeamsForUser(userId: Long, pageable: Pageable): Page<Team> {
         try {
             val user = appUserService.findById(userId)
@@ -88,10 +93,12 @@ class TeamService(
      * @param updatedTeam the updated team details
      * @return the persisted team
      * @throws NoMatchFoundException if a team with that ID was not found
+     * @throws NotAuthorizedException if the authenticated user is not a member of the group and not an admin
      */
     fun update(id: Long, updatedTeam: Team): Team {
         try {
             val team = findById(id)
+            checkCurrentUserIsAuthorizedToModifyTeam(team)
             team.name = updatedTeam.name
             logger.info("Updating team ${team.id}")
             return teamRepository.save(team)
@@ -106,16 +113,33 @@ class TeamService(
      *
      * @param id identifies the team
      * @throws NoMatchFoundException if a team with that ID was not found
+     * @throws NotAuthorizedException if the authenticated user is not a member of the group and not an admin
      */
     fun retire(id: Long) {
         try {
             val team = findById(id)
+            checkCurrentUserIsAuthorizedToModifyTeam(team)
             team.retire()
             logger.info("Retiring team ${team.id}")
             teamRepository.save(team)
         } catch (exception: NoMatchFoundException) {
             logger.warn("Cannot retire a team as none exists with the ID '$id'")
             throw exception
+        }
+    }
+
+    /**
+     * Validate that the current authenticated user is either a member of the team or is an administrator.
+     *
+     * @param team the team to check the user is a member of
+     * @throws NotAuthorizedException if the authenticated user is not a member of the group and not an admin
+     */
+    private fun checkCurrentUserIsAuthorizedToModifyTeam(team: Team) {
+        val currentUser = appUserService.getCurrentAuthenticatedUser()
+
+        if (!team.members.contains(currentUser) || userSecurity.isAdmin(currentUser)) {
+            logger.warn("User '${currentUser.id}' is not a member of team '${team.id}' and cannot modify it")
+            throw NotAuthorizedException("User '${currentUser.id}' is not a member of team '${team.id}'")
         }
     }
 

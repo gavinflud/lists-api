@@ -1,5 +1,7 @@
 package com.gavinflood.lists.api.controller.dto
 
+import java.util.*
+
 /**
  * DTO for a response from the API.
  *
@@ -9,6 +11,7 @@ class ApiResponse(val response: Any?) {
 
     var errorCode: String? = null
     var errorDescription: String? = null
+    var timestamp = Date()
 
     /**
      * @param errorCode the error that occurred (optional)
@@ -21,7 +24,8 @@ class ApiResponse(val response: Any?) {
 
     companion object {
         const val ERROR_NOT_FOUND = "L1000"
-        const val CONFLICT = "L1001"
+        const val ERROR_CONFLICT = "L1001"
+        const val ERROR_UNAUTHORIZED = "L1002"
     }
 
 }

@@ -2,10 +2,8 @@ package com.gavinflood.lists.api.controller
 
 import com.gavinflood.lists.api.controller.dto.ApiResponse
 import com.gavinflood.lists.api.domain.Team
-import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.service.TeamService
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -36,12 +34,7 @@ class TeamController(private val teamService: TeamService) {
      */
     @GetMapping
     fun getMultiple(@RequestParam userId: Long, pageable: Pageable): ResponseEntity<ApiResponse> {
-        return try {
-            ResponseEntity.ok(ApiResponse(teamService.findTeamsForUser(userId, pageable)))
-        } catch (exception: NoMatchFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse(ApiResponse.ERROR_NOT_FOUND, "No user with that ID was found."))
-        }
+        return ResponseEntity.ok(ApiResponse(teamService.findTeamsForUser(userId, pageable)))
     }
 
     /**
@@ -52,12 +45,7 @@ class TeamController(private val teamService: TeamService) {
      */
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<ApiResponse> {
-        return try {
-            ResponseEntity.ok(ApiResponse(teamService.findById(id)))
-        } catch (exception: NoMatchFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse(ApiResponse.ERROR_NOT_FOUND, "No team with that ID was found."))
-        }
+        return ResponseEntity.ok(ApiResponse(teamService.findById(id)))
     }
 
     /**
@@ -69,12 +57,7 @@ class TeamController(private val teamService: TeamService) {
      */
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody updatedTeam: Team): ResponseEntity<ApiResponse> {
-        return try {
-            ResponseEntity.ok(ApiResponse(teamService.update(id, updatedTeam)))
-        } catch (exception: NoMatchFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse(ApiResponse.ERROR_NOT_FOUND, "No team with that ID was found."))
-        }
+        return ResponseEntity.ok(ApiResponse(teamService.update(id, updatedTeam)))
     }
 
     /**
@@ -84,12 +67,7 @@ class TeamController(private val teamService: TeamService) {
      */
     @DeleteMapping("/{id}")
     fun retire(@PathVariable id: Long): ResponseEntity<ApiResponse> {
-        return try {
-            ResponseEntity.ok(ApiResponse(teamService.retire(id)))
-        } catch (exception: NoMatchFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse(ApiResponse.ERROR_NOT_FOUND, "No team with that ID was found."))
-        }
+        return ResponseEntity.ok(ApiResponse(teamService.retire(id)))
     }
 
 }
