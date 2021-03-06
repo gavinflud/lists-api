@@ -34,7 +34,8 @@ class SecurityConfig(
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val jwtRequestFilter: JwtRequestFilter,
     private val userService: AppUserService,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val corsProperties: CorsProperties
 
 ) : WebSecurityConfigurerAdapter() {
 
@@ -85,9 +86,10 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = singletonList(CorsConfiguration.ALL)
+        configuration.allowedOrigins = singletonList(corsProperties.allowedOrigins)
         configuration.allowedMethods = singletonList(CorsConfiguration.ALL)
         configuration.allowedHeaders = singletonList(CorsConfiguration.ALL)
+        configuration.allowCredentials = true
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
         return source

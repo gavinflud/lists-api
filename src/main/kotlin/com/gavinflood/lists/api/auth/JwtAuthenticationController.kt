@@ -58,7 +58,6 @@ class JwtAuthenticationController(
      */
     @PostMapping("/refresh")
     fun refresh(@RequestBody request: JwtRefreshRequest): ResponseEntity<JwtResponse> {
-
         return try {
             val username = jwtUtil.getUsernameFromToken(request.refreshToken)
             val userDetails = userDetailsService.loadUserByUsername(username)

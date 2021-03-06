@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.PropertySource
 import org.springframework.stereotype.Component
 
+/**
+ * Properties wrapper for data pre-loading.
+ */
 @Component
 @PropertySource("classpath:preload.properties")
 class PreloadProperties {
