@@ -91,6 +91,7 @@ class JwtUtil {
         if (userDetails is AppUser) {
             claims["firstName"] = userDetails.firstName
             claims["lastName"] = userDetails.lastName
+            claims["id"] = userDetails.id
         }
 
         return generateToken(claims, userDetails.username, false)

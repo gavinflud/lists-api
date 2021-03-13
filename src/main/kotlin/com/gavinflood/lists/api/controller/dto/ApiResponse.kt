@@ -5,9 +5,9 @@ import java.util.*
 /**
  * DTO for a response from the API.
  *
- * @param response the response object (optional)
+ * @param body the response object (optional)
  */
-class ApiResponse(val response: Any?) {
+class ApiResponse(val body: Any?) {
 
     var errorCode: String? = null
     var errorDescription: String? = null
