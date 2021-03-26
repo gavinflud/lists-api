@@ -27,10 +27,7 @@ class TeamService(
     private val logger = LoggerFactory.getLogger(TeamService::class.java)
 
     /**
-     * Create a new team and add the current authenticated user as its only initial member.
-     *
-     * @param team the team to be created
-     * @return the persisted team
+     * Create a new [Team] and add the current authenticated user as its only initial member.
      */
     fun create(team: Team): Team {
         val users = mutableSetOf(appUserService.getCurrentAuthenticatedUser())
@@ -38,11 +35,7 @@ class TeamService(
     }
 
     /**
-     * Create a new team and add multiple users as members.
-     *
-     * @param team the team to be created
-     * @param users initial members of the team
-     * @return the persisted team
+     * Create a new [Team] and add multiple users as members.
      */
     protected fun create(team: Team, users: Collection<AppUser>): Team {
         team.members.addAll(users)
@@ -50,11 +43,9 @@ class TeamService(
     }
 
     /**
-     * Find a team by its unique ID.
+     * Find a [Team] by its unique [id].
      *
-     * @param id identifies the team
-     * @return the team if it exists
-     * @throws NoMatchFoundException if a team with that ID was not found
+     * TODO: Limit access to teams if the user is not a member
      */
     fun findById(id: Long): Team {
         val team = teamRepository.findById(id)
@@ -68,12 +59,7 @@ class TeamService(
     }
 
     /**
-     * Find the teams a user is a member of.
-     *
-     * @param userId identifies the user
-     * @param pageable defines the page index and size
-     * @return a paginated list of teams the user is a member of
-     * @throws NoMatchFoundException if a user with that ID was not found
+     * Find the teams a user (identified by [userId]) is a member of.
      */
     @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #userId)")
     fun findTeamsForUser(userId: Long, pageable: Pageable): Page<Team> {
@@ -87,13 +73,7 @@ class TeamService(
     }
 
     /**
-     * Update a team.
-     *
-     * @param id identifies the team
-     * @param updatedTeam the updated team details
-     * @return the persisted team
-     * @throws NoMatchFoundException if a team with that ID was not found
-     * @throws NotAuthorizedException if the authenticated user is not a member of the group and not an admin
+     * Update a [Team].
      */
     fun update(id: Long, updatedTeam: Team): Team {
         try {
@@ -109,11 +89,7 @@ class TeamService(
     }
 
     /**
-     * Retire a team.
-     *
-     * @param id identifies the team
-     * @throws NoMatchFoundException if a team with that ID was not found
-     * @throws NotAuthorizedException if the authenticated user is not a member of the group and not an admin
+     * Retire a [Team] identified by its [id].
      */
     fun retire(id: Long) {
         try {
@@ -129,10 +105,7 @@ class TeamService(
     }
 
     /**
-     * Validate that the current authenticated user is either a member of the team or is an administrator.
-     *
-     * @param team the team to check the user is a member of
-     * @throws NotAuthorizedException if the authenticated user is not a member of the group and not an admin
+     * Validate that the current authenticated user is either a member of the [team] or is an administrator.
      */
     private fun checkCurrentUserIsAuthorizedToModifyTeam(team: Team) {
         val currentUser = appUserService.getCurrentAuthenticatedUser()

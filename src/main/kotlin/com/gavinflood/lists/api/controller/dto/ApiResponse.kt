@@ -1,12 +1,12 @@
 package com.gavinflood.lists.api.controller.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import java.util.*
 
 /**
  * DTO for a response from the API.
- *
- * @param body the response object (optional)
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class ApiResponse(val body: Any?) {
 
     var errorCode: String? = null

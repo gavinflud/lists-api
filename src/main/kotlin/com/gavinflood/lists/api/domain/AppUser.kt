@@ -1,7 +1,5 @@
 package com.gavinflood.lists.api.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -23,46 +21,40 @@ class AppUser(
     @JoinColumn(name = "credential_id", referencedColumnName = "id")
     var credential: Credential,
 
+    ) : BaseEntity(), UserDetails {
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_roles",
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    val roles: MutableSet<Role> = mutableSetOf(),
+    val roles: MutableSet<Role> = mutableSetOf()
 
     @ManyToMany(mappedBy = "members")
-    @JsonIgnore
-    val teams: MutableSet<Team> = mutableSetOf(),
+    val teams: MutableSet<Team> = mutableSetOf()
 
     // TODO: Change this to true once activation logic is complete
     @Column(name = "is_locked")
-    @JsonIgnore
-    var isLocked: Boolean = false,
-
-    ) : BaseEntity(), UserDetails {
+    var isLocked: Boolean = false
 
     /**
-     * @return the permissions granted to the user
+     * Return the permissions granted to the user
      */
-    @JsonIgnore
     override fun getAuthorities(): Collection<GrantedAuthority> {
         return roles.flatMap { it.permissions }.map { SimpleGrantedAuthority(it.code) }
     }
 
     /**
-     * @return the user's password
+     * Return the user's password
      */
-    @JsonIgnore
     override fun getPassword(): String {
         return credential.password
     }
 
     /**
-     * @return the user's email address
+     * Returns the user's email address
      */
-    @JsonIgnore
     override fun getUsername(): String {
         return credential.emailAddress
     }
@@ -70,17 +62,15 @@ class AppUser(
     /**
      * TODO: Add expiration date to accounts
      *
-     * @return true if the user's account is active
+     * Returns true if the user's account is active
      */
-    @JsonIgnore
     override fun isAccountNonExpired(): Boolean {
         return true
     }
 
     /**
-     * @return true if the user's account is not locked
+     * Returns true if the user's account is not locked
      */
-    @JsonIgnore
     override fun isAccountNonLocked(): Boolean {
         return !isLocked
     }
@@ -88,19 +78,15 @@ class AppUser(
     /**
      * TODO: Add ability to expire user's credentials
      *
-     * @return true if the user's credentials have not expired
+     * Returns true if the user's credentials have not expired
      */
-    @JsonIgnore
     override fun isCredentialsNonExpired(): Boolean {
         return true
     }
 
     /**
-     * TODO: Add ability to disable accounts
-     *
-     * @return true if the user's account is enabled
+     * Returns true if the user's account is enabled.
      */
-    @JsonIgnore
     override fun isEnabled(): Boolean {
         return true
     }

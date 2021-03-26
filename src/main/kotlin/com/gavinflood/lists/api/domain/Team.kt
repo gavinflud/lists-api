@@ -12,6 +12,8 @@ class Team(
     @Column(name = "name")
     var name: String,
 
+    ) : BaseEntity() {
+
     @ManyToMany
     @JoinTable(
         name = "team_members",
@@ -19,10 +21,10 @@ class Team(
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    val members: MutableSet<AppUser> = mutableSetOf(),
+    val members: MutableSet<AppUser> = mutableSetOf()
 
     @OneToMany(mappedBy = "team")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     val boards: MutableSet<Board> = mutableSetOf()
 
-) : BaseEntity()
+}

@@ -4,16 +4,13 @@ import com.gavinflood.lists.api.data.PreloadProperties
 import com.gavinflood.lists.api.domain.AppUser
 import com.gavinflood.lists.api.domain.Role
 import com.gavinflood.lists.api.exception.NoMatchFoundException
-import com.gavinflood.lists.api.exception.UsernameAlreadyExistsException
 import com.gavinflood.lists.api.repository.AppUserRepository
-import com.gavinflood.lists.api.repository.CredentialRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 /**
@@ -23,53 +20,32 @@ import org.springframework.stereotype.Service
 class AppUserService(
 
     private val appUserRepository: AppUserRepository,
-    private val credentialRepository: CredentialRepository,
+    private val credentialService: CredentialService,
     private val roleService: RoleService,
     private val preloadProperties: PreloadProperties,
-    private val passwordEncoder: PasswordEncoder
 
-) : UserDetailsService {
+    ) : UserDetailsService {
 
     private val logger = LoggerFactory.getLogger(AppUserService::class.java)
 
     /**
-     * Load a user based on their username. This involves a query for the credential followed by a query for the user.
-     *
-     * @param username of the user
-     * @return a [UserDetails] implementation for the user
+     * Load a user based on their [username]. This involves a query for the credential followed by a query for the user.
      */
     override fun loadUserByUsername(username: String): UserDetails {
-        val credential = credentialRepository.findDistinctByEmailAddress(username)
-        var usernameFound = credential.isPresent
+        val credential = credentialService.findOne(username)
+        val user = appUserRepository.findDistinctByCredentialAndRetiredIsFalse(credential)
 
-        if (usernameFound) {
-            val user = appUserRepository.findDistinctByCredentialAndRetiredIsFalse(credential.get())
-            usernameFound = user.isPresent
-
-            if (usernameFound) {
-                return user.get()
-            }
+        if (user.isPresent) {
+            return user.get()
         }
 
         throw UsernameNotFoundException("No user found with username '$username'")
     }
 
     /**
-     * Create a new user.
-     *
-     * @param user the user to be created
-     * @return the persisted user
-     * @throws UsernameAlreadyExistsException if the username is already in use by another user
+     * Create a new [user] and return the saved [AppUser].
      */
     fun create(user: AppUser): AppUser {
-        val existingCredential = credentialRepository.findDistinctByEmailAddress(user.credential.emailAddress)
-        if (existingCredential.isPresent) {
-            logger.info("Cannot create a user with a username currently used by user '${existingCredential.get().id}'")
-            throw UsernameAlreadyExistsException()
-        }
-
-        user.credential.password = passwordEncoder.encode(user.credential.password)
-
         // All new users should get the default "user" role
         if (user.roles.isEmpty()) {
             user.roles.add(roleService.findByCode(preloadProperties.roleUserCode))
@@ -79,11 +55,7 @@ class AppUserService(
     }
 
     /**
-     * Find a user by their unique ID.
-     *
-     * @param id identifies the user
-     * @return the user if they exist
-     * @throws NoMatchFoundException if a user with that ID was not found
+     * Find a user by their unique [id].
      */
     fun findById(id: Long): AppUser {
         val user = appUserRepository.findById(id)
@@ -97,12 +69,8 @@ class AppUserService(
     }
 
     /**
-     * Update an existing user. This does not allow the user to update their credentials.
-     *
-     * @param id identifies the user
-     * @param updatedUser the updated user details
-     * @return the persisted user
-     * @throws NoMatchFoundException if a user with that ID was not found
+     * Update an existing user (identified by their unique [id]. This does not allow the user to update their
+     * credentials. Returns the updated [AppUser].
      */
     @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #id)")
     fun update(id: Long, updatedUser: AppUser): AppUser {
@@ -119,10 +87,7 @@ class AppUserService(
     }
 
     /**
-     * Retire an existing user.
-     *
-     * @param id identifies the user
-     * @throws NoMatchFoundException if a user with that ID was not found
+     * Retire an existing user (identified by their unique [id]).
      */
     @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #id)")
     fun retire(id: Long) {
@@ -138,12 +103,8 @@ class AppUserService(
     }
 
     /**
-     * Update the roles assigned to a user.
-     *
-     * @param id identifies the user
-     * @param roles the complete set of roles the user should have
-     * @return the updated user
-     * @throws NoMatchFoundException if a user with that ID was not found
+     * Update the roles assigned to a user (identified by their unique [id]). This clears the user's current roles and
+     * assigns the passed [roles].
      */
     @PreAuthorize("hasAuthority('admin')")
     fun updateRoles(id: Long, roles: Set<Role>): AppUser {
@@ -160,7 +121,7 @@ class AppUserService(
     }
 
     /**
-     * @return the current authenticated user
+     * Get the current authenticated [AppUser].
      */
     fun getCurrentAuthenticatedUser(): AppUser {
         val currentUsername = SecurityContextHolder.getContext().authentication.name

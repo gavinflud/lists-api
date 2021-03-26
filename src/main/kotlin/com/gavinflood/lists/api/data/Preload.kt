@@ -120,7 +120,7 @@ class Preload(
         roles: MutableSet<Role>
     ): AppUser {
         val credential = Credential(email, passwordEncoder.encode(password))
-        return userService.create(AppUser(firstName, lastName, credential, roles))
+        return userService.create(AppUser(firstName, lastName, credential).apply { this.roles.addAll(roles) })
     }
 
 }
