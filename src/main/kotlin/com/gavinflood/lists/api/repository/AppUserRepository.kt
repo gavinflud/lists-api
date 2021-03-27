@@ -12,6 +12,9 @@ import java.util.*
 @Repository
 interface AppUserRepository : JpaRepository<AppUser, Long> {
 
+    /**
+     * Find a single [AppUser] given their [credential].
+     */
     fun findDistinctByCredentialAndRetiredIsFalse(credential: Credential): Optional<AppUser>
 
 }

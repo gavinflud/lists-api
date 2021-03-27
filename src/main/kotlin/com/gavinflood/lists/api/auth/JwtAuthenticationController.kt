@@ -13,10 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 
 /**
  * Controller used to authenticate users and provide them with a JWT.
- *
- * @param authenticationManager used to authenticate a user's credentials
- * @param jwtUtil generates the JWT
- * @param userDetailsService retrieves the user's details for the JWT
  */
 @RestController
 @RequestMapping("/api/authenticate")
@@ -32,9 +28,6 @@ class JwtAuthenticationController(
 
     /**
      * Authenticate a set of credentials and produce a JWT.
-     *
-     * @param request body containing the username and password
-     * @return a JWT if successfully authenticated and a 401 Unauthorized error code otherwise
      */
     @PostMapping
     fun authenticate(@RequestBody request: JwtAuthenticationRequest): ResponseEntity<JwtResponse> {
@@ -52,9 +45,6 @@ class JwtAuthenticationController(
 
     /**
      * Attempt to refresh an access token using a refresh token.
-     *
-     * @param request body containing the refresh token
-     * @return a JWT if successfully refreshed and a 401 Unauthorized error code otherwise
      */
     @PostMapping("/refresh")
     fun refresh(@RequestBody request: JwtRefreshRequest): ResponseEntity<JwtResponse> {
@@ -74,23 +64,15 @@ class JwtAuthenticationController(
 
 /**
  * Simple class to store a request with the user's credentials as the body.
- *
- * @param username the user's username
- * @param password the user's password
  */
 data class JwtAuthenticationRequest(val username: String, val password: String)
 
 /**
  * Simple class to store a request with the refresh token as the body.
- *
- * @param refreshToken the refresh token
  */
 data class JwtRefreshRequest(val refreshToken: String)
 
 /**
- * Simple class to store a response with the user's JWT as the body.
- *
- * @param accessToken the JWT that the user can use for authentication
- * @param refreshToken the JWT that the user can use to refresh their access token
+ * Simple class to store a response with the user's JWTs as the body.
  */
 data class JwtResponse(val accessToken: String, val refreshToken: String)

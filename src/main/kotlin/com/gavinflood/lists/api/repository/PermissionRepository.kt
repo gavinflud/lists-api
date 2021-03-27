@@ -14,18 +14,12 @@ import java.util.*
 interface PermissionRepository : JpaRepository<Permission, Long> {
 
     /**
-     * Find a distinct permission by its code.
-     *
-     * @param code identifies the permission
-     * @return an optional container for the matching permission if it exists
+     * Find a distinct [Permission] by its [code].
      */
     fun findDistinctByCodeAndRetiredIsFalse(code: String): Optional<Permission>
 
     /**
      * Find all permissions.
-     *
-     * @param pageable defines the page number and results per page
-     * @return a page of permissions
      */
     fun findAllByRetiredIsFalse(pageable: Pageable): Page<Permission>
 

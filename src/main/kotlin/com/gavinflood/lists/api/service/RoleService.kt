@@ -19,11 +19,7 @@ class RoleService(private val roleRepository: RoleRepository) {
     private val logger: Logger = LoggerFactory.getLogger(RoleService::class.java)
 
     /**
-     * Find a distinct role by its code.
-     *
-     * @param code identifies the role
-     * @return the matching role if it exists
-     * @throws NoMatchFoundException if no matching role is found
+     * Find a distinct [Role] by its [code].
      */
     fun findByCode(code: String): Role {
         return roleRepository.findDistinctByCodeAndRetiredIsFalse(code).orElseThrow {
@@ -33,10 +29,7 @@ class RoleService(private val roleRepository: RoleRepository) {
     }
 
     /**
-     * Find multiple roles matching a set of codes.
-     *
-     * @param codes identifies the roles to find
-     * @return the set of roles matching the codes
+     * Find multiple roles matching a set of [codes].
      */
     fun findMultiple(codes: Set<String>): Set<Role> {
         return roleRepository.findAllByCodeInAndRetiredIsFalse(codes)
@@ -44,20 +37,13 @@ class RoleService(private val roleRepository: RoleRepository) {
 
     /**
      * Find all roles.
-     *
-     * @param pageable defines the page number and results per page
-     * @return a page of roles
      */
     fun findAll(pageable: Pageable): Page<Role> {
         return roleRepository.findAllByRetiredIsFalse(pageable)
     }
 
     /**
-     * Create a new role.
-     *
-     * @param role the role to be created
-     * @return the persisted role
-     * @throws AlreadyExistsException if the role already exists
+     * Create a new [Role].
      */
     fun create(role: Role): Role {
         if (roleRepository.findDistinctByCodeAndRetiredIsFalse(role.code).isEmpty) {
@@ -68,11 +54,7 @@ class RoleService(private val roleRepository: RoleRepository) {
     }
 
     /**
-     * Update an existing role.
-     *
-     * @param code identifies the existing role to be updated
-     * @param updatedRole contains the updated values for the role
-     * @throws AlreadyExistsException if the role code has changed but that code is already in use
+     * Update an existing [Role] identified by its code.
      */
     fun update(code: String, updatedRole: Role): Role {
         val existingRole = findByCode(code)
@@ -88,10 +70,7 @@ class RoleService(private val roleRepository: RoleRepository) {
     }
 
     /**
-     * Retire an existing role.
-     *
-     * @param code identifies the role
-     * @throws NoMatchFoundException if no role with that code was found
+     * Retire an existing [Role] identified by its code.
      */
     fun retire(code: String) {
         try {

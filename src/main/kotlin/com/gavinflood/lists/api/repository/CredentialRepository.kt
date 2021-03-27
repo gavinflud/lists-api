@@ -12,10 +12,7 @@ import java.util.*
 interface CredentialRepository : JpaRepository<Credential, Long> {
 
     /**
-     * Find a set of credentials by the email address.
-     *
-     * @param emailAddress the user's email address
-     * @return An [Optional] that will contain the credential if a match was found
+     * Find a [Credential] identified by the email address.
      */
     fun findDistinctByEmailAddress(emailAddress: String): Optional<Credential>
 

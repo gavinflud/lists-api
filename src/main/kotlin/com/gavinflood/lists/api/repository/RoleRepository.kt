@@ -14,26 +14,17 @@ import java.util.*
 interface RoleRepository : JpaRepository<Role, Long> {
 
     /**
-     * Find a distinct role by its code.
-     *
-     * @param code identifies the role
-     * @return an optional container for the matching role if it exists
+     * Find a distinct [Role] by its [code].
      */
     fun findDistinctByCodeAndRetiredIsFalse(code: String): Optional<Role>
 
     /**
-     * Find all roles that match a set of codes.
-     *
-     * @param codes identifies the roles
-     * @return all matching roles
+     * Find all roles that have a code in [codes].
      */
     fun findAllByCodeInAndRetiredIsFalse(codes: Set<String>): Set<Role>
 
     /**
      * Find all roles.
-     *
-     * @param pageable defines the page number and results per page
-     * @return a page of roles
      */
     fun findAllByRetiredIsFalse(pageable: Pageable): Page<Role>
 

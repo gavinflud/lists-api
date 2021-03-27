@@ -14,10 +14,7 @@ import org.springframework.stereotype.Repository
 interface TeamRepository : JpaRepository<Team, Long> {
 
     /**
-     * Find all teams that contain a given user.
-     *
-     * @param user that should be a member of the team
-     * @return a page of the teams the user is a member of
+     * Find all teams that contain the [user].
      */
     fun findAllByMembersContains(user: AppUser, pageable: Pageable): Page<Team>
 

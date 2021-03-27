@@ -28,10 +28,6 @@ class JwtRequestFilter(
 
     /**
      * Perform JWT validation.
-     *
-     * @param request made from the client
-     * @param response that will be sent to the client
-     * @param filterChain used to invoke the next filter or end the chain
      */
     override fun doFilterInternal(
         request: HttpServletRequest,

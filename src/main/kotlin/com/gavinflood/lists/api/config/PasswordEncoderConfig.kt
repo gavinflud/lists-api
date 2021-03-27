@@ -11,8 +11,6 @@ class PasswordEncoderConfig {
 
     /**
      * Create the default password encoder.
-     *
-     * @return a BCrypt password encoder
      */
     @Bean
     fun passwordEncoder(): PasswordEncoder {

@@ -14,10 +14,6 @@ class JwtAuthenticationEntryPoint : AuthenticationEntryPoint {
 
     /**
      * Handles exceptions and throw an unauthorized exception whenever a JWT token is not validated.
-     *
-     * @param request that resulted in an [AuthenticationException]
-     * @param response so that the user agent can begin authentication
-     * @param authException that caused the invocation
      */
     override fun commence(
         request: HttpServletRequest,

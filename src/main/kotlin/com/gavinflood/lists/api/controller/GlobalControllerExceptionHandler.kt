@@ -25,7 +25,7 @@ class GlobalControllerExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     /**
-     * Handle when a user is not authorixed to perform an operation.
+     * Handle when a user is not authorized to perform an operation.
      */
     @ExceptionHandler(NotAuthorizedException::class)
     fun handleNotAuthorized(exception: NotAuthorizedException): ResponseEntity<ApiResponse> {

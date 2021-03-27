@@ -33,8 +33,6 @@ class Preload(
 
     /**
      * Called when the application context is initialised or refreshed.
-     *
-     * @param event raised when the application context is initialised or refreshed
      */
     override fun onApplicationEvent(event: ContextRefreshedEvent) {
         if (!hasPreloadAlreadyCompleted && !hasPreloadAlreadyCompleted()) {
@@ -44,8 +42,6 @@ class Preload(
 
     /**
      * Checks if the preload has already completed by querying for data created during it.
-     *
-     * @return true if preload has previously completed
      */
     private fun hasPreloadAlreadyCompleted(): Boolean {
         return credentialRepository.findDistinctByEmailAddress(preloadProperties.userAdminUsername).isPresent
@@ -80,37 +76,21 @@ class Preload(
     }
 
     /**
-     * Create a permission.
-     *
-     * @param code identifies the permission
-     * @param description describes the permission
-     * @return the created permission
+     * Create a [Permission].
      */
     private fun createPermission(code: String, description: String): Permission {
         return permissionService.create(Permission(code, description))
     }
 
     /**
-     * Create a role.
-     *
-     * @param code identifies the role
-     * @param description describes the role
-     * @param permissions set of permissions the role should contain
-     * @return the created role
+     * Create a [Role].
      */
     private fun createRole(code: String, description: String, permissions: MutableSet<Permission>): Role {
         return roleService.create(Role(code, description, permissions))
     }
 
     /**
-     * Create a user.
-     *
-     * @param email identifies the user
-     * @param password the user uses to authenticate
-     * @param firstName the user's first name
-     * @param lastName the user's last name
-     * @param roles set of roles the user should have
-     * @return the created user
+     * Create a user[AppUser].
      */
     private fun createUser(
         email: String,

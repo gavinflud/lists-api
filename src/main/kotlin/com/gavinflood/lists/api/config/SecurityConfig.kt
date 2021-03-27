@@ -41,8 +41,6 @@ class SecurityConfig(
 
     /**
      * Configuring [HttpSecurity] to have a stateless application that uses JWT for authentication.
-     *
-     * @param httpSecurity the [HttpSecurity] to modify
      */
     override fun configure(httpSecurity: HttpSecurity) {
         httpSecurity
@@ -59,8 +57,6 @@ class SecurityConfig(
 
     /**
      * Configure the authentication manager to use the custom [AppUserService] and [BCryptPasswordEncoder].
-     *
-     * @param auth manager to configure
      */
     override fun configure(auth: AuthenticationManagerBuilder) {
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder)
@@ -68,8 +64,6 @@ class SecurityConfig(
 
     /**
      * Expose the authentication manager as a bean.
-     *
-     * @return the default authentication manager
      */
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager {
@@ -78,10 +72,6 @@ class SecurityConfig(
 
     /**
      * Create the default CORS configuration source to allow only specific origins but all methods and headers.
-     *
-     * TODO: Restrict origins
-     *
-     * @return A source wrapper that provides a Cors configuration instance
      */
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

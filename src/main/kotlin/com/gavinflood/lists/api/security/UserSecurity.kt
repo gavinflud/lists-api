@@ -12,11 +12,7 @@ import org.springframework.stereotype.Component
 class UserSecurity(private val preloadProperties: PreloadProperties) {
 
     /**
-     * Check if the current authenticated user matches the ID passed in.
-     *
-     * @param authentication the current authentication
-     * @param id the user ID to check against
-     * @return true if the user matches, false otherwise
+     * Check if the current authenticated user ([authentication]) matches the [id] passed in.
      */
     fun isSameUser(authentication: Authentication, id: Long): Boolean {
         val principal = authentication.principal
@@ -28,25 +24,18 @@ class UserSecurity(private val preloadProperties: PreloadProperties) {
     }
 
     /**
-     * Check if a user is an administrator.
-     *
-     * @param user the user to check
-     * @return true if they have the admin permission and false otherwise
+     * Check if [user] is an administrator (i.e. has the "admin" permission).
      */
     fun isAdmin(user: AppUser): Boolean {
         return user.authorities.map { it.authority }.contains(preloadProperties.permissionAdminCode)
     }
 
     /**
-     * Check if the current authenticated user is an administrator or matches the ID passed in.
-     *
-     * @param authentication the current authentication
-     * @param id the user ID to check against
-     * @return true if the user matches, false otherwise
+     * Check if the current authenticated user ([authentication]) is an administrator or matches the [id] passed in.
      */
     fun isAdminOrSameUser(authentication: Authentication, id: Long): Boolean {
         return authentication.authorities.map { it.authority }.contains(preloadProperties.permissionAdminCode)
-            || isSameUser(authentication, id)
+                || isSameUser(authentication, id)
     }
 
 }

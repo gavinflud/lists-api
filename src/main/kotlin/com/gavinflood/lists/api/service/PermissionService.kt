@@ -19,11 +19,7 @@ class PermissionService(private val permissionRepository: PermissionRepository) 
     private val logger: Logger = LoggerFactory.getLogger(PermissionService::class.java)
 
     /**
-     * Find a distinct permission by its code.
-     *
-     * @param code identifies the permission
-     * @return the matching permission if it exists
-     * @throws NoMatchFoundException if no matching permission is found
+     * Find a distinct [Permission] by its [code].
      */
     fun findByCode(code: String): Permission {
         return permissionRepository.findDistinctByCodeAndRetiredIsFalse(code).orElseThrow {
@@ -34,20 +30,13 @@ class PermissionService(private val permissionRepository: PermissionRepository) 
 
     /**
      * Find all permissions.
-     *
-     * @param pageable defines the page number and results per page
-     * @return a page of permissions
      */
     fun findAll(pageable: Pageable): Page<Permission> {
         return permissionRepository.findAllByRetiredIsFalse(pageable)
     }
 
     /**
-     * Create a new permission.
-     *
-     * @param permission the permission to be created
-     * @return the persisted permission
-     * @throws AlreadyExistsException if the permission already exists
+     * Create a new [Permission].
      */
     fun create(permission: Permission): Permission {
         if (permissionRepository.findDistinctByCodeAndRetiredIsFalse(permission.code).isEmpty) {
@@ -58,11 +47,7 @@ class PermissionService(private val permissionRepository: PermissionRepository) 
     }
 
     /**
-     * Update an existing permission.
-     *
-     * @param code identifies the existing permission to be updated
-     * @param updatedPermission contains the updated values for the permission
-     * @throws AlreadyExistsException if the permission code has changed but that code is already in use
+     * Update an existing [Permission] identified by its [code].
      */
     fun update(code: String, updatedPermission: Permission): Permission {
         val existingPermission = findByCode(code)
@@ -80,10 +65,7 @@ class PermissionService(private val permissionRepository: PermissionRepository) 
     }
 
     /**
-     * Retire an existing permission.
-     *
-     * @param code identifies the permission
-     * @throws NoMatchFoundException if no permission with that code was found
+     * Retire an existing [Permission] identified by its [code].
      */
     fun retire(code: String) {
         try {

@@ -27,63 +27,44 @@ class JwtUtil {
     private var refreshTimeout = 21600000
 
     /**
-     * Get all claims from a token.
-     *
-     * @param token the encoded token
-     * @return the claims map
+     * Get all [Claims] from a [token].
      */
     fun getAllClaimsFromToken(token: String): Claims {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).body
     }
 
     /**
-     * Get a username from a token.
-     *
-     * @param token the encoded token
-     * @return the username
+     * Get a username from a [token].
      */
     fun getUsernameFromToken(token: String): String {
         return getAllClaimsFromToken(token).subject
     }
 
     /**
-     * Get the expiration date of a token.
-     *
-     * @param token the encoded token
-     * @return the expiration date of the token
+     * Get the expiration date of a [token].
      */
     fun getExpirationDateFromToken(token: String): Date {
         return getAllClaimsFromToken(token).expiration
     }
 
     /**
-     * Check if a token has expired.
+     * Check if a [token] has expired.
      *
      * TODO: Possibly remove as exception is thrown when getting claims if token is expired anyway
-     *
-     * @param token the encoded token
-     * @return true if the token has expired and false otherwise
      */
     fun isTokenExpired(token: String): Boolean {
         return getExpirationDateFromToken(token).before(Date())
     }
 
     /**
-     * Check if a token is valid based on the username.
-     *
-     * @param token the encoded token
-     * @param userDetails the user to check the username on the token against
-     * @return true if the token is valid and false otherwise
+     * Check if a [token] is valid based on the username.
      */
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
         return getUsernameFromToken(token) == userDetails.username && !isTokenExpired(token)
     }
 
     /**
-     * Generate an access token for a given user.
-     *
-     * @param userDetails the user the access token is for
-     * @return the encoded token
+     * Generate an access token for a given [userDetails].
      */
     fun generateAccessToken(userDetails: UserDetails): String {
         val claims = mutableMapOf<String, Any>()
@@ -98,10 +79,7 @@ class JwtUtil {
     }
 
     /**
-     * Generate a refresh token for a given user.
-     *
-     * @param userDetails the user the refresh token is for
-     * @return the encoded token
+     * Generate a refresh token for a given [userDetails].
      */
     fun generateRefreshToken(userDetails: UserDetails): String {
         return generateToken(mutableMapOf(), userDetails.username, true)
@@ -110,10 +88,8 @@ class JwtUtil {
     /**
      * Generic token generation function for both types of JWTs.
      *
-     * @param claims the claims to be added to the token
-     * @param subject the identifier for the user the token is for
-     * @param isRefreshToken true if the token is a refresh token and false if it is an access token
-     * @return the encoded token
+     * The [claims] and [subject] will be populated directly on the resulting JWT, while the [isRefreshToken] flag is
+     * used to determine the expiration time of this token.
      */
     private fun generateToken(claims: Map<String, Any>, subject: String, isRefreshToken: Boolean): String {
         val expiration = Calendar.getInstance()
