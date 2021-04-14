@@ -65,7 +65,7 @@ class TeamService(
     fun findTeamsForUser(userId: Long, pageable: Pageable): Page<Team> {
         try {
             val user = appUserService.findById(userId)
-            return teamRepository.findAllByMembersContains(user, pageable)
+            return teamRepository.findAllByMembersContainsAndRetiredIsFalse(user, pageable)
         } catch (exception: NoMatchFoundException) {
             logger.warn("Cannot find teams as no user exists with the ID '$userId'")
             throw exception

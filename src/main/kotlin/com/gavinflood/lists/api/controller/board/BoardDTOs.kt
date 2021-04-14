@@ -1,10 +1,8 @@
 package com.gavinflood.lists.api.controller.board
 
 import com.gavinflood.lists.api.controller.dto.BasicDTO
-import com.gavinflood.lists.api.controller.mapper.BasicMapper
 import com.gavinflood.lists.api.domain.Board
-import org.mapstruct.Mapper
-import org.mapstruct.Mapping
+import com.gavinflood.lists.api.domain.Team
 
 /**
  * DTO for board data sent in requests.
@@ -13,13 +11,16 @@ data class BoardRequestDTO(
     val name: String,
     val description: String,
     val teamId: Long,
-) : BasicDTO
+) : BasicDTO {
 
-/**
- * Mapper for [Board] entities to [BoardRequestDTO] instances and vice-versa.
- */
-@Mapper(componentModel = "spring")
-interface BoardRequestMapper : BasicMapper<Board, BoardRequestDTO>
+    /**
+     * Create [Board] from [BoardRequestDTO].
+     */
+    fun toEntity(team: Team): Board {
+        return Board(name, description, team)
+    }
+
+}
 
 /**
  * DTO for board data sent in responses.
@@ -32,12 +33,8 @@ data class BoardResponseDTO(
 ) : BasicDTO
 
 /**
- * Mapper for [Board] entities to [BoardResponseDTO] instances and vice-versa.
+ * Create [BoardResponseDTO] from [Board].
  */
-@Mapper(componentModel = "spring")
-interface BoardResponseMapper : BasicMapper<Board, BoardResponseDTO> {
-
-    @Mapping(target = "teamId", source = "team.id")
-    override fun entityToDTO(entity: Board): BoardResponseDTO
-
+fun Board.toResponseDTO(): BoardResponseDTO {
+    return BoardResponseDTO(id, name, description, team.id)
 }

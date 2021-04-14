@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.*
 class BoardController(
 
     private val boardService: BoardService,
-    private val teamService: TeamService,
-    private val boardRequestMapper: BoardRequestMapper,
-    private val boardResponseMapper: BoardResponseMapper
+    private val teamService: TeamService
 
 ) {
 
@@ -29,8 +27,8 @@ class BoardController(
     @PostMapping
     fun create(@RequestBody dto: BoardRequestDTO): ResponseEntity<ApiResponse> {
         val team = teamService.findById(dto.teamId)
-        val board = boardService.create(boardRequestMapper.dtoToEntity(dto), team)
-        return ResponseEntity.ok(ApiResponse(boardResponseMapper.entityToDTO(board)))
+        val board = boardService.create(dto.toEntity(team))
+        return ResponseEntity.ok(ApiResponse(board.toResponseDTO()))
     }
 
     /**
@@ -40,7 +38,7 @@ class BoardController(
     @GetMapping
     fun getMultiple(@RequestParam userId: Long, pageable: Pageable): ResponseEntity<ApiResponse> {
         val pageOfBoards = boardService.findBoardsForUser(userId, pageable)
-        val boardDTOs = pageOfBoards.content.map { board -> boardResponseMapper.entityToDTO(board) }
+        val boardDTOs = pageOfBoards.content.map { board -> board.toResponseDTO() }
         val pageOfBoardDTOs = PageImpl(boardDTOs, pageable, pageOfBoards.totalElements)
         return ResponseEntity.ok(ApiResponse(pageOfBoardDTOs))
     }
@@ -50,8 +48,8 @@ class BoardController(
      */
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<ApiResponse> {
-        val board = boardResponseMapper.entityToDTO(boardService.findById(id))
-        return ResponseEntity.ok(ApiResponse(board))
+        val board = boardService.findById(id)
+        return ResponseEntity.ok(ApiResponse(board.toResponseDTO()))
     }
 
     /**
@@ -59,10 +57,9 @@ class BoardController(
      */
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody updatedBoardDTO: BoardRequestDTO): ResponseEntity<ApiResponse> {
-        val dtoAsEntity = boardRequestMapper.dtoToEntity(updatedBoardDTO)
-        dtoAsEntity.team = teamService.findById(updatedBoardDTO.teamId)
-        val updatedBoard = boardResponseMapper.entityToDTO(boardService.update(id, dtoAsEntity))
-        return ResponseEntity.ok(ApiResponse(updatedBoard))
+        val team = teamService.findById(updatedBoardDTO.teamId)
+        val updatedBoard = boardService.update(id, updatedBoardDTO.toEntity(team))
+        return ResponseEntity.ok(ApiResponse(updatedBoard.toResponseDTO()))
     }
 
     /**

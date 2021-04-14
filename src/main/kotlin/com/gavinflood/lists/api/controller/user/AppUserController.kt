@@ -18,8 +18,6 @@ class AppUserController(
 
     private val appUserService: AppUserService,
     private val credentialService: CredentialService,
-    private val appUserRequestMapper: AppUserRequestMapper,
-    private val appUserResponseMapper: AppUserResponseMapper,
 
     ) {
 
@@ -32,7 +30,7 @@ class AppUserController(
         return try {
             val credential = credentialService.create(Credential(dto.credential.emailAddress, dto.credential.password))
             val user = appUserService.create(AppUser(dto.user.firstName, dto.user.lastName, credential))
-            ResponseEntity.ok(ApiResponse(appUserResponseMapper.entityToDTO(user)))
+            ResponseEntity.ok(ApiResponse(user.toResponseDTO()))
         } catch (exception: UsernameAlreadyExistsException) {
             ResponseEntity.ok(ApiResponse(ApiResponse.ERROR_CONFLICT, "A user with that email address already exists."))
         }
@@ -43,8 +41,8 @@ class AppUserController(
      */
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): ResponseEntity<ApiResponse> {
-        val user = appUserResponseMapper.entityToDTO(appUserService.findById(id))
-        return ResponseEntity.ok(ApiResponse(user))
+        val user = appUserService.findById(id)
+        return ResponseEntity.ok(ApiResponse(user.toResponseDTO()))
     }
 
     /**
@@ -53,9 +51,8 @@ class AppUserController(
      */
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody dto: AppUserRequestDTO): ResponseEntity<ApiResponse> {
-        val dtoAsEntity = appUserRequestMapper.dtoToEntity(dto)
-        val updatedUser = appUserResponseMapper.entityToDTO(appUserService.update(id, dtoAsEntity))
-        return ResponseEntity.ok(ApiResponse(updatedUser))
+        val updatedUser = appUserService.update(id, dto.toEntity())
+        return ResponseEntity.ok(ApiResponse(updatedUser.toResponseDTO()))
     }
 
     /**

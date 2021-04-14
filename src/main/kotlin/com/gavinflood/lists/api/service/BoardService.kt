@@ -1,7 +1,6 @@
 package com.gavinflood.lists.api.service
 
 import com.gavinflood.lists.api.domain.Board
-import com.gavinflood.lists.api.domain.Team
 import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.exception.NotAuthorizedException
 import com.gavinflood.lists.api.repository.BoardRepository
@@ -28,10 +27,9 @@ class BoardService(
     private val logger = LoggerFactory.getLogger(TeamService::class.java)
 
     /**
-     * Create a new [Board] under [team].
+     * Create a new [Board].
      */
-    fun create(board: Board, team: Team): Board {
-        board.team = team
+    fun create(board: Board): Board {
         return boardRepository.save(board)
     }
 
@@ -57,7 +55,7 @@ class BoardService(
     @PreAuthorize("@userSecurity.isAdminOrSameUser(authentication, #userId)")
     fun findBoardsForUser(userId: Long, pageable: Pageable): Page<Board> {
         val teams = teamService.findTeamsForUser(userId, Pageable.unpaged())
-        return boardRepository.findAllByTeamIn(teams.content, pageable)
+        return boardRepository.findAllByTeamInAndRetiredIsFalse(teams.content, pageable)
     }
 
     /**

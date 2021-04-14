@@ -2,10 +2,9 @@ package com.gavinflood.lists.api.controller.user
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.gavinflood.lists.api.controller.dto.BasicDTO
-import com.gavinflood.lists.api.controller.mapper.BasicMapper
 import com.gavinflood.lists.api.domain.AppUser
+import com.gavinflood.lists.api.domain.Credential
 import com.gavinflood.lists.api.domain.Role
-import org.mapstruct.Mapper
 
 /**
  * DTO for user data sent in requests.
@@ -15,19 +14,14 @@ data class AppUserRequestDTO(
     val lastName: String,
 ) : BasicDTO {
 
-    /*
-     * TODO: Workaround so that this can be mapped to an AppUser but it can probably be done with MapStruct
-     * This is never used in the service layer so there is no risk of blank credentials being stored
+    /**
+     * Create a [AppUser] from [AppUserRequestDTO].
      */
-    val credential = CredentialDTO("", "")
+    fun toEntity(): AppUser {
+        return AppUser(firstName, lastName, Credential("", ""))
+    }
 
 }
-
-/**
- * Mapper for [AppUser] entities to [AppUserRequestDTO] instances and vice-versa.
- */
-@Mapper(componentModel = "spring")
-interface AppUserRequestMapper : BasicMapper<AppUser, AppUserRequestDTO>
 
 /**
  * DTO for user data sent in responses.
@@ -39,10 +33,11 @@ data class AppUserResponseDTO(
 ) : BasicDTO
 
 /**
- * Mapper for [AppUser] entities to [AppUserResponseDTO] instances and vice-versa.
+ * Create [AppUserResponseDTO] from [AppUser].
  */
-@Mapper(componentModel = "spring")
-interface AppUserResponseMapper : BasicMapper<AppUser, AppUserResponseDTO>
+fun AppUser.toResponseDTO(): AppUserResponseDTO {
+    return AppUserResponseDTO(id, firstName, lastName)
+}
 
 /**
  * DTO for credential data sent in requests.

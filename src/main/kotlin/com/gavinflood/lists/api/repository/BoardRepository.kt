@@ -16,6 +16,6 @@ interface BoardRepository : JpaRepository<Board, Long> {
     /**
      * Find all boards that are owned by a team in [teams].
      */
-    fun findAllByTeamIn(teams: Collection<Team>, pageable: Pageable): Page<Board>
+    fun findAllByTeamInAndRetiredIsFalse(teams: Collection<Team>, pageable: Pageable): Page<Board>
 
 }

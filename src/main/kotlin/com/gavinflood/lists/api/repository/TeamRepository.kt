@@ -16,6 +16,6 @@ interface TeamRepository : JpaRepository<Team, Long> {
     /**
      * Find all teams that contain the [user].
      */
-    fun findAllByMembersContains(user: AppUser, pageable: Pageable): Page<Team>
+    fun findAllByMembersContainsAndRetiredIsFalse(user: AppUser, pageable: Pageable): Page<Team>
 
 }

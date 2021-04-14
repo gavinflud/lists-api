@@ -12,13 +12,7 @@ import org.springframework.web.bind.annotation.*
  */
 @RestController
 @RequestMapping("/api/teams")
-class TeamController(
-
-    private val teamService: TeamService,
-    private val teamRequestMapper: TeamRequestMapper,
-    private val teamResponseMapper: TeamResponseMapper
-
-) {
+class TeamController(private val teamService: TeamService) {
 
     /**
      * Create a team with the data passed from the [dto] parameter. Once complete, the response should be a
@@ -28,8 +22,8 @@ class TeamController(
      */
     @PostMapping
     fun create(@RequestBody dto: TeamRequestDTO): ResponseEntity<ApiResponse> {
-        val team = teamService.create(teamRequestMapper.dtoToEntity(dto))
-        return ResponseEntity.ok(ApiResponse(teamResponseMapper.entityToDTO(team)))
+        val team = teamService.create(dto.toEntity())
+        return ResponseEntity.ok(ApiResponse(team.toResponseDTO()))
     }
 
     /**
@@ -39,7 +33,7 @@ class TeamController(
     @GetMapping
     fun getMultiple(@RequestParam userId: Long, pageable: Pageable): ResponseEntity<ApiResponse> {
         val pageOfTeams = teamService.findTeamsForUser(userId, pageable)
-        val teamDTOs = pageOfTeams.content.map { team -> teamResponseMapper.entityToDTO(team) }
+        val teamDTOs = pageOfTeams.content.map { team -> team.toResponseDTO() }
         val pageOfTeamDTOs = PageImpl(teamDTOs, pageable, pageOfTeams.totalElements)
         return ResponseEntity.ok(ApiResponse(pageOfTeamDTOs))
     }
@@ -49,8 +43,8 @@ class TeamController(
      */
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<ApiResponse> {
-        val team = teamResponseMapper.entityToDTO(teamService.findById(id))
-        return ResponseEntity.ok(ApiResponse(team))
+        val team = teamService.findById(id)
+        return ResponseEntity.ok(ApiResponse(team.toResponseDTO()))
     }
 
     /**
@@ -59,9 +53,8 @@ class TeamController(
      */
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody updatedTeamDTO: TeamRequestDTO): ResponseEntity<ApiResponse> {
-        val dtoAsEntity = teamRequestMapper.dtoToEntity(updatedTeamDTO)
-        val updatedTeam = teamResponseMapper.entityToDTO(teamService.update(id, dtoAsEntity))
-        return ResponseEntity.ok(ApiResponse(updatedTeam))
+        val updatedTeam = teamService.update(id, updatedTeamDTO.toEntity())
+        return ResponseEntity.ok(ApiResponse(updatedTeam.toResponseDTO()))
     }
 
     /**
