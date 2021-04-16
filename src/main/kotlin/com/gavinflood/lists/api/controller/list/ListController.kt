@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.controller.list
 
+import com.gavinflood.lists.api.controller.Responses
 import com.gavinflood.lists.api.controller.dto.ApiResponse
 import com.gavinflood.lists.api.service.BoardService
 import com.gavinflood.lists.api.service.ListService
@@ -26,7 +27,7 @@ class ListController(
     fun create(@RequestBody dto: ListRequestDTO): ResponseEntity<ApiResponse> {
         val board = boardService.findById(dto.boardId)
         val list = listService.create(dto.toEntity(board))
-        return ResponseEntity.ok(ApiResponse(list.toResponseDTO()))
+        return Responses.ok(list.toResponseDTO())
     }
 
     /**
@@ -37,7 +38,7 @@ class ListController(
     fun getMultiple(@RequestParam boardId: Long, pageable: Pageable): ResponseEntity<ApiResponse> {
         val board = boardService.findById(boardId)
         val lists = listService.findAllUnderBoard(board)
-        return ResponseEntity.ok(ApiResponse(lists.map { list -> list.toResponseDTO() }))
+        return Responses.ok(lists.map { list -> list.toResponseDTO() })
     }
 
     /**
@@ -46,7 +47,7 @@ class ListController(
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<ApiResponse> {
         val list = listService.findById(id)
-        return ResponseEntity.ok(ApiResponse(list.toResponseDTO()))
+        return Responses.ok(list.toResponseDTO())
     }
 
     /**
@@ -56,7 +57,7 @@ class ListController(
     fun update(@PathVariable id: Long, @RequestBody updatedListDTO: ListRequestDTO): ResponseEntity<ApiResponse> {
         val board = boardService.findById(updatedListDTO.boardId)
         val updatedList = listService.update(id, updatedListDTO.toEntity(board))
-        return ResponseEntity.ok(ApiResponse(updatedList.toResponseDTO()))
+        return Responses.ok(updatedList.toResponseDTO())
     }
 
     /**

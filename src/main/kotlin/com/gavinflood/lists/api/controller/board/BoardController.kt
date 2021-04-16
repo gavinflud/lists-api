@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.controller.board
 
+import com.gavinflood.lists.api.controller.Responses
 import com.gavinflood.lists.api.controller.dto.ApiResponse
 import com.gavinflood.lists.api.domain.Board
 import com.gavinflood.lists.api.service.BoardService
@@ -28,7 +29,7 @@ class BoardController(
     fun create(@RequestBody dto: BoardRequestDTO): ResponseEntity<ApiResponse> {
         val team = teamService.findById(dto.teamId)
         val board = boardService.create(dto.toEntity(team))
-        return ResponseEntity.ok(ApiResponse(board.toResponseDTO()))
+        return Responses.ok(board.toResponseDTO())
     }
 
     /**
@@ -40,7 +41,7 @@ class BoardController(
         val pageOfBoards = boardService.findBoardsForUser(userId, pageable)
         val boardDTOs = pageOfBoards.content.map { board -> board.toResponseDTO() }
         val pageOfBoardDTOs = PageImpl(boardDTOs, pageable, pageOfBoards.totalElements)
-        return ResponseEntity.ok(ApiResponse(pageOfBoardDTOs))
+        return Responses.ok(pageOfBoardDTOs)
     }
 
     /**
@@ -49,7 +50,7 @@ class BoardController(
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<ApiResponse> {
         val board = boardService.findById(id)
-        return ResponseEntity.ok(ApiResponse(board.toResponseDTO()))
+        return Responses.ok(board.toResponseDTO())
     }
 
     /**
@@ -59,7 +60,7 @@ class BoardController(
     fun update(@PathVariable id: Long, @RequestBody updatedBoardDTO: BoardRequestDTO): ResponseEntity<ApiResponse> {
         val team = teamService.findById(updatedBoardDTO.teamId)
         val updatedBoard = boardService.update(id, updatedBoardDTO.toEntity(team))
-        return ResponseEntity.ok(ApiResponse(updatedBoard.toResponseDTO()))
+        return Responses.ok(updatedBoard.toResponseDTO())
     }
 
     /**

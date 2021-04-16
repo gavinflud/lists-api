@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.controller.user
 
+import com.gavinflood.lists.api.controller.Responses
 import com.gavinflood.lists.api.controller.dto.ApiResponse
 import com.gavinflood.lists.api.domain.AppUser
 import com.gavinflood.lists.api.domain.Credential
@@ -30,7 +31,7 @@ class AppUserController(
         return try {
             val credential = credentialService.create(Credential(dto.credential.emailAddress, dto.credential.password))
             val user = appUserService.create(AppUser(dto.user.firstName, dto.user.lastName, credential))
-            ResponseEntity.ok(ApiResponse(user.toResponseDTO()))
+            Responses.ok(user.toResponseDTO())
         } catch (exception: UsernameAlreadyExistsException) {
             ResponseEntity.ok(ApiResponse(ApiResponse.ERROR_CONFLICT, "A user with that email address already exists."))
         }
@@ -42,7 +43,7 @@ class AppUserController(
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): ResponseEntity<ApiResponse> {
         val user = appUserService.findById(id)
-        return ResponseEntity.ok(ApiResponse(user.toResponseDTO()))
+        return Responses.ok(user.toResponseDTO())
     }
 
     /**
@@ -52,7 +53,7 @@ class AppUserController(
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody dto: AppUserRequestDTO): ResponseEntity<ApiResponse> {
         val updatedUser = appUserService.update(id, dto.toEntity())
-        return ResponseEntity.ok(ApiResponse(updatedUser.toResponseDTO()))
+        return Responses.ok(updatedUser.toResponseDTO())
     }
 
     /**

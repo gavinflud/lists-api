@@ -1,5 +1,6 @@
 package com.gavinflood.lists.api.controller.team
 
+import com.gavinflood.lists.api.controller.Responses
 import com.gavinflood.lists.api.controller.dto.ApiResponse
 import com.gavinflood.lists.api.service.TeamService
 import org.springframework.data.domain.PageImpl
@@ -17,13 +18,11 @@ class TeamController(private val teamService: TeamService) {
     /**
      * Create a team with the data passed from the [dto] parameter. Once complete, the response should be a
      * [TeamResponseDTO] wrapped in an [ApiResponse].
-     *
-     * TODO: Add a global function to call [ResponseEntity.ok] passing in an [ApiResponse] to save duplication
      */
     @PostMapping
     fun create(@RequestBody dto: TeamRequestDTO): ResponseEntity<ApiResponse> {
         val team = teamService.create(dto.toEntity())
-        return ResponseEntity.ok(ApiResponse(team.toResponseDTO()))
+        return Responses.ok(team.toResponseDTO())
     }
 
     /**
@@ -35,7 +34,7 @@ class TeamController(private val teamService: TeamService) {
         val pageOfTeams = teamService.findTeamsForUser(userId, pageable)
         val teamDTOs = pageOfTeams.content.map { team -> team.toResponseDTO() }
         val pageOfTeamDTOs = PageImpl(teamDTOs, pageable, pageOfTeams.totalElements)
-        return ResponseEntity.ok(ApiResponse(pageOfTeamDTOs))
+        return Responses.ok(pageOfTeamDTOs)
     }
 
     /**
@@ -44,7 +43,7 @@ class TeamController(private val teamService: TeamService) {
     @GetMapping("/{id}")
     fun getOne(@PathVariable id: Long): ResponseEntity<ApiResponse> {
         val team = teamService.findById(id)
-        return ResponseEntity.ok(ApiResponse(team.toResponseDTO()))
+        return Responses.ok(team.toResponseDTO())
     }
 
     /**
@@ -54,7 +53,7 @@ class TeamController(private val teamService: TeamService) {
     @PutMapping("/{id}")
     fun update(@PathVariable id: Long, @RequestBody updatedTeamDTO: TeamRequestDTO): ResponseEntity<ApiResponse> {
         val updatedTeam = teamService.update(id, updatedTeamDTO.toEntity())
-        return ResponseEntity.ok(ApiResponse(updatedTeam.toResponseDTO()))
+        return Responses.ok(updatedTeam.toResponseDTO())
     }
 
     /**
