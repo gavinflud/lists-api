@@ -17,6 +17,7 @@ class ListService(
 
     private val listRepository: ListRepository,
     private val appUserService: AppUserService,
+    private val boardService: BoardService,
     private val userSecurity: UserSecurity
 
 ) {
@@ -32,8 +33,6 @@ class ListService(
 
     /**
      * Find a [List] by its unique [id].
-     *
-     * TODO: Limit access to lists if the user is not a member of the board
      */
     fun findById(id: Long): List {
         val list = listRepository.findById(id)
@@ -43,15 +42,15 @@ class ListService(
             throw NoMatchFoundException("No list was found with ID '$id'")
         }
 
+        checkCurrentUserIsAuthorizedToAccessList(list.get())
         return list.get()
     }
 
     /**
      * Find all lists under [board].
-     *
-     * TODO: Limit access to lists if the user is not a member of the board
      */
     fun findAllUnderBoard(board: Board): Collection<List> {
+        boardService.checkCurrentUserIsAuthorizedToAccessBoard(board)
         return listRepository.findAllByBoardEqualsAndRetiredIsFalseOrderByPriorityAsc(board)
     }
 
@@ -61,12 +60,12 @@ class ListService(
     fun update(id: Long, updatedList: List): List {
         try {
             val list = findById(id)
-            checkCurrentUserIsAuthorizedToModifyList(list)
+            checkCurrentUserIsAuthorizedToAccessList(list)
             list.name = updatedList.name
             list.priority = updatedList.priority
 
             if (updatedList.board != list.board) {
-                checkCurrentUserIsAuthorizedToModifyList(updatedList)
+                checkCurrentUserIsAuthorizedToAccessList(updatedList)
                 list.board = updatedList.board
             }
 
@@ -84,7 +83,7 @@ class ListService(
     fun retire(id: Long) {
         try {
             val list = findById(id)
-            checkCurrentUserIsAuthorizedToModifyList(list)
+            checkCurrentUserIsAuthorizedToAccessList(list)
             list.retire()
             logger.info("Retiring list ${list.id}")
             listRepository.save(list)
@@ -98,10 +97,10 @@ class ListService(
      * Validate that the current authenticated user is either a member of the team that owns [list] or is an
      * administrator.
      */
-    private fun checkCurrentUserIsAuthorizedToModifyList(list: List) {
+    private fun checkCurrentUserIsAuthorizedToAccessList(list: List) {
         val currentUser = appUserService.getCurrentAuthenticatedUser()
 
-        if (!list.board.team.members.contains(currentUser) || userSecurity.isAdmin(currentUser)) {
+        if (!list.board.team.members.contains(currentUser) && !userSecurity.isAdmin(currentUser)) {
             logger.warn(
                 "User '${currentUser.id}' is not authorized for list '${list.id}' under board " +
                         "'${list.board.id}' and cannot modify it"

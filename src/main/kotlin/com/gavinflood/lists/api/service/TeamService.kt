@@ -44,8 +44,6 @@ class TeamService(
 
     /**
      * Find a [Team] by its unique [id].
-     *
-     * TODO: Limit access to teams if the user is not a member
      */
     fun findById(id: Long): Team {
         val team = teamRepository.findById(id)
@@ -55,6 +53,7 @@ class TeamService(
             throw NoMatchFoundException("No team was found with ID '$id'")
         }
 
+        checkCurrentUserIsAuthorizedToAccessTeam(team.get())
         return team.get()
     }
 
@@ -78,7 +77,7 @@ class TeamService(
     fun update(id: Long, updatedTeam: Team): Team {
         try {
             val team = findById(id)
-            checkCurrentUserIsAuthorizedToModifyTeam(team)
+            checkCurrentUserIsAuthorizedToAccessTeam(team)
             team.name = updatedTeam.name
             logger.info("Updating team ${team.id}")
             return teamRepository.save(team)
@@ -94,7 +93,7 @@ class TeamService(
     fun retire(id: Long) {
         try {
             val team = findById(id)
-            checkCurrentUserIsAuthorizedToModifyTeam(team)
+            checkCurrentUserIsAuthorizedToAccessTeam(team)
             team.retire()
             logger.info("Retiring team ${team.id}")
             teamRepository.save(team)
@@ -107,10 +106,10 @@ class TeamService(
     /**
      * Validate that the current authenticated user is either a member of the [team] or is an administrator.
      */
-    private fun checkCurrentUserIsAuthorizedToModifyTeam(team: Team) {
+    private fun checkCurrentUserIsAuthorizedToAccessTeam(team: Team) {
         val currentUser = appUserService.getCurrentAuthenticatedUser()
 
-        if (!team.members.contains(currentUser) || userSecurity.isAdmin(currentUser)) {
+        if (!team.members.contains(currentUser) && !userSecurity.isAdmin(currentUser)) {
             logger.warn("User '${currentUser.id}' is not a member of team '${team.id}' and cannot modify it")
             throw NotAuthorizedException("User '${currentUser.id}' is not a member of team '${team.id}'")
         }
