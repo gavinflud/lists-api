@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.gavinflood.lists.api.controller.dto.BasicDTO
 import com.gavinflood.lists.api.domain.AppUser
 import com.gavinflood.lists.api.domain.Credential
-import com.gavinflood.lists.api.domain.Role
 
 /**
  * DTO for user data sent in requests.
@@ -30,13 +29,14 @@ data class AppUserResponseDTO(
     val id: Long,
     val firstName: String,
     val lastName: String,
+    val roles: List<String>
 ) : BasicDTO
 
 /**
  * Create [AppUserResponseDTO] from [AppUser].
  */
 fun AppUser.toResponseDTO(): AppUserResponseDTO {
-    return AppUserResponseDTO(id, firstName, lastName)
+    return AppUserResponseDTO(id, firstName, lastName, roles.map { it.code })
 }
 
 /**
@@ -59,7 +59,5 @@ data class RegisterDTO(
 
 /**
  * DTO used for requests to update the roles for a user.
- *
- * TODO: Create a role DTO
  */
-data class UpdateUserRolesDTO(val roles: Set<Role>) : BasicDTO
+data class UpdateUserRolesDTO(val roles: Set<String>) : BasicDTO

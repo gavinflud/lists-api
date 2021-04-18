@@ -7,6 +7,7 @@ import com.gavinflood.lists.api.domain.Credential
 import com.gavinflood.lists.api.exception.UsernameAlreadyExistsException
 import com.gavinflood.lists.api.service.AppUserService
 import com.gavinflood.lists.api.service.CredentialService
+import com.gavinflood.lists.api.service.RoleService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -19,8 +20,9 @@ class AppUserController(
 
     private val appUserService: AppUserService,
     private val credentialService: CredentialService,
+    private val roleService: RoleService
 
-    ) {
+) {
 
     /**
      * Register a user based on the data passed from the [dto]. This includes creating the associated [Credential]. Once
@@ -58,8 +60,6 @@ class AppUserController(
 
     /**
      * Retire a user (identified by their [id]).
-     *
-     * TODO: Avoid sending null response body
      */
     @DeleteMapping("/{id}")
     fun retire(@PathVariable id: Long): ResponseEntity<ApiResponse> {
@@ -70,11 +70,11 @@ class AppUserController(
      * Update the roles for an individual user (identified by their [id]).
      *
      * TODO: Add custom 403 error handler
-     * TODO: Create roles controller and request/response DTOs and move this to there
      */
     @PutMapping("/{id}/roles")
     fun updateRoles(@PathVariable id: Long, @RequestBody dto: UpdateUserRolesDTO): ResponseEntity<ApiResponse> {
-        return ResponseEntity.ok(ApiResponse(appUserService.updateRoles(id, dto.roles)))
+        val roles = roleService.findMultiple(dto.roles)
+        return Responses.ok(appUserService.updateRoles(id, roles).toResponseDTO())
     }
 
 }
