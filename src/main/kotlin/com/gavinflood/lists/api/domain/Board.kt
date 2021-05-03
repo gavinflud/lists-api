@@ -1,6 +1,5 @@
 package com.gavinflood.lists.api.domain
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 
 /**
@@ -19,7 +18,6 @@ class Board(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     var team: Team,
 
     @OneToMany(mappedBy = "board")

@@ -1,6 +1,5 @@
 package com.gavinflood.lists.api.domain
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 
 /**
@@ -20,11 +19,9 @@ class Team(
         joinColumns = [JoinColumn(name = "team_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")]
     )
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     val members: MutableSet<AppUser> = mutableSetOf()
 
     @OneToMany(mappedBy = "team")
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     val boards: MutableSet<Board> = mutableSetOf()
 
 }

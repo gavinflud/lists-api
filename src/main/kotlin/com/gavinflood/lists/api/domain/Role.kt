@@ -1,7 +1,5 @@
 package com.gavinflood.lists.api.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 
 /**
@@ -22,11 +20,9 @@ class Role(
         joinColumns = [JoinColumn(name = "role_id")],
         inverseJoinColumns = [JoinColumn(name = "permission_id")]
     )
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     val permissions: MutableSet<Permission> = mutableSetOf(),
 
     @ManyToMany(mappedBy = "roles")
-    @JsonIgnore
     val users: MutableSet<AppUser> = mutableSetOf()
 
 ) : BaseEntity()

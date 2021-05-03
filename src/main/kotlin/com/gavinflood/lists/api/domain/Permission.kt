@@ -1,6 +1,5 @@
 package com.gavinflood.lists.api.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.ManyToMany
@@ -19,7 +18,6 @@ class Permission(
     var description: String,
 
     @ManyToMany(mappedBy = "permissions")
-    @JsonIgnore
     val roles: MutableSet<Role> = mutableSetOf()
 
 ) : BaseEntity()
