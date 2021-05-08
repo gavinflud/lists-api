@@ -3,8 +3,10 @@ package com.gavinflood.lists.api.service
 import com.gavinflood.lists.api.data.PreloadProperties
 import com.gavinflood.lists.api.domain.AppUser
 import com.gavinflood.lists.api.domain.Role
+import com.gavinflood.lists.api.domain.Team
 import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.repository.AppUserRepository
+import com.gavinflood.lists.api.repository.TeamRepository
 import org.slf4j.LoggerFactory
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
@@ -22,6 +24,7 @@ class AppUserService(
     private val appUserRepository: AppUserRepository,
     private val credentialService: CredentialService,
     private val roleService: RoleService,
+    private val teamRepository: TeamRepository,
     private val preloadProperties: PreloadProperties,
 
     ) : UserDetailsService {
@@ -51,7 +54,11 @@ class AppUserService(
             user.roles.add(roleService.findByCode(preloadProperties.roleUserCode))
         }
 
-        return appUserRepository.save(user)
+        return appUserRepository.save(user).apply {
+            val team = Team(preloadProperties.teamDefaultName)
+            team.members.add(this)
+            teamRepository.save(team)
+        }
     }
 
     /**

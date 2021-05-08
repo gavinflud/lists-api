@@ -47,4 +47,7 @@ class PreloadProperties {
     @Value("\${preload.role.admin.description}")
     var roleAdminDescription = ""
 
+    @Value("\${preload.team.default.name}")
+    var teamDefaultName = ""
+
 }
