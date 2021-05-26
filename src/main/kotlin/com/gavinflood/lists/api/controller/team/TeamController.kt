@@ -2,6 +2,7 @@ package com.gavinflood.lists.api.controller.team
 
 import com.gavinflood.lists.api.controller.Responses
 import com.gavinflood.lists.api.controller.dto.ApiResponse
+import com.gavinflood.lists.api.controller.user.toResponseDTO
 import com.gavinflood.lists.api.service.TeamService
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -62,6 +63,17 @@ class TeamController(private val teamService: TeamService) {
     @DeleteMapping("/{id}")
     fun retire(@PathVariable id: Long): ResponseEntity<ApiResponse> {
         return ResponseEntity.ok(ApiResponse(teamService.retire(id)))
+    }
+
+    /**
+     * Get the members of a team identified by its [id].
+     *
+     * TODO: Might be better to paginate this or combine it with the [getOne] DTO.
+     */
+    @GetMapping("/{id}/members")
+    fun getMembers(@PathVariable id: Long): ResponseEntity<ApiResponse> {
+        val memberDTOs = teamService.findById(id).members.map { user -> user.toResponseDTO() }
+        return Responses.ok(memberDTOs)
     }
 
 }
