@@ -61,6 +61,25 @@ class ListController(
     }
 
     /**
+     * Update multiple lists under a board identified by [boardId] at once.
+     *
+     * TODO: Implement a single service function to do this and validate priorities
+     * TODO: Validate all lists are part of the one board
+     */
+    @PutMapping
+    fun updateMultiple(
+        @RequestParam boardId: Long,
+        @RequestBody updateListsDTO: UpdateMultipleListRequestDTO
+    ): ResponseEntity<ApiResponse> {
+        val board = boardService.findById(boardId)
+        updateListsDTO.lists.forEach { listDTO ->
+            val list = listService.findById(listDTO.id)
+            listService.update(list.id, listDTO.toEntity(board))
+        }
+        return ResponseEntity.ok(ApiResponse(null))
+    }
+
+    /**
      * Retire a list identified by its [id].
      */
     @DeleteMapping("/{id}")

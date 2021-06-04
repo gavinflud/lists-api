@@ -38,3 +38,28 @@ data class ListResponseDTO(
 fun List.toResponseDTO(): ListResponseDTO {
     return ListResponseDTO(id, name, priority, board.id)
 }
+
+/**
+ * DTO for an updated list as part of a multi-update request.
+ */
+data class UpdateListRequestDTO(
+    val id: Long,
+    val name: String,
+    val priority: Int
+) : BasicDTO {
+
+    /**
+     * Create [List] from [UpdateListRequestDTO].
+     */
+    fun toEntity(board: Board): List {
+        return List(name, priority, board)
+    }
+
+}
+
+/**
+ * DTO for updating multiple lists in one request.
+ */
+data class UpdateMultipleListRequestDTO(
+    val lists: Set<UpdateListRequestDTO>
+) : BasicDTO
