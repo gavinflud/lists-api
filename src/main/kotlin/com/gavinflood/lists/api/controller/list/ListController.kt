@@ -64,7 +64,6 @@ class ListController(
      * Update multiple lists under a board identified by [boardId] at once.
      *
      * TODO: Implement a single service function to do this and validate priorities
-     * TODO: Validate all lists are part of the one board
      */
     @PutMapping
     fun updateMultiple(
