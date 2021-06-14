@@ -48,19 +48,10 @@ class JwtUtil {
     }
 
     /**
-     * Check if a [token] has expired.
-     *
-     * TODO: Possibly remove as exception is thrown when getting claims if token is expired anyway
-     */
-    fun isTokenExpired(token: String): Boolean {
-        return getExpirationDateFromToken(token).before(Date())
-    }
-
-    /**
      * Check if a [token] is valid based on the username.
      */
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
-        return getUsernameFromToken(token) == userDetails.username && !isTokenExpired(token)
+        return getUsernameFromToken(token) == userDetails.username
     }
 
     /**
