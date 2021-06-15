@@ -26,6 +26,7 @@ class ApiResponse(val body: Any?) {
         const val ERROR_NOT_FOUND = "L1000"
         const val ERROR_CONFLICT = "L1001"
         const val ERROR_UNAUTHORIZED = "L1002"
+        const val ERROR_BAD_OPERATION = "L1003"
     }
 
 }

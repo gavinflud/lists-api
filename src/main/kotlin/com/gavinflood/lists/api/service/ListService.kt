@@ -2,6 +2,7 @@ package com.gavinflood.lists.api.service
 
 import com.gavinflood.lists.api.domain.Board
 import com.gavinflood.lists.api.domain.List
+import com.gavinflood.lists.api.exception.BadOperationException
 import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.exception.NotAuthorizedException
 import com.gavinflood.lists.api.repository.ListRepository
@@ -61,8 +62,7 @@ class ListService(
         try {
             val list = findById(id)
             checkCurrentUserIsAuthorizedToAccessList(list)
-            list.name = updatedList.name
-            list.priority = updatedList.priority
+            updateListInternal(list, updatedList)
 
             if (updatedList.board != list.board) {
                 checkCurrentUserIsAuthorizedToAccessList(updatedList)
@@ -73,6 +73,39 @@ class ListService(
             return listRepository.save(list)
         } catch (exception: NoMatchFoundException) {
             logger.warn("Cannot update a list as none exists with the ID '$id'")
+            throw exception
+        }
+    }
+
+    /**
+     * Update multiple lists under a single [board] at once. Standard use-case for this would be reordering lists.
+     */
+    fun updateMultiple(updatedListsById: Map<Long, List>, board: Board): Set<List> {
+        try {
+            return updatedListsById
+                .mapKeys { findById(it.key) }
+                .onEach { entry ->
+                    val existingList = entry.key
+                    // Validate all lists are under the same board
+                    if (existingList.board != board) {
+                        throw BadOperationException("All lists to be updated must exist under the same board")
+                    }
+
+                    checkCurrentUserIsAuthorizedToAccessList(existingList)
+                }.map { entry ->
+                    val existingList = entry.key
+                    val updatedList = entry.value
+                    updateListInternal(existingList, updatedList)
+
+                    logger.info("Updating list ${existingList.id}")
+                    listRepository.save(existingList)
+                }.toSet()
+        } catch (exception: NoMatchFoundException) {
+            logger.warn(
+                "Cannot update lists with IDs [${
+                    updatedListsById.keys.joinToString(",")
+                }] as one was not found"
+            )
             throw exception
         }
     }
@@ -91,6 +124,14 @@ class ListService(
             logger.warn("Cannot retire a list as none exists with the ID '$id'")
             throw exception
         }
+    }
+
+    /**
+     * Update an [existingList] with the values from an [updatedList].
+     */
+    private fun updateListInternal(existingList: List, updatedList: List) {
+        existingList.name = updatedList.name
+        existingList.priority = updatedList.priority
     }
 
     /**

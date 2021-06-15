@@ -1,6 +1,7 @@
 package com.gavinflood.lists.api.controller
 
 import com.gavinflood.lists.api.controller.dto.ApiResponse
+import com.gavinflood.lists.api.exception.BadOperationException
 import com.gavinflood.lists.api.exception.NoMatchFoundException
 import com.gavinflood.lists.api.exception.NotAuthorizedException
 import org.springframework.http.HttpStatus
@@ -31,6 +32,15 @@ class GlobalControllerExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNotAuthorized(exception: NotAuthorizedException): ResponseEntity<ApiResponse> {
         val message = "You are not authorized to perform that operation"
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ApiResponse(ApiResponse.ERROR_UNAUTHORIZED, message))
+    }
+
+    /**
+     * Handle when a requested operation is invalid.
+     */
+    @ExceptionHandler(BadOperationException::class)
+    fun handleBadOperation(exception: BadOperationException): ResponseEntity<ApiResponse> {
+        val message = exception.message ?: "That operation is invalid and could not be completed"
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResponse(ApiResponse.ERROR_BAD_OPERATION, message))
     }
 
 }

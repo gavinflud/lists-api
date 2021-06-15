@@ -24,3 +24,9 @@ class AlreadyExistsException(message: String) : Exception(message)
  */
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 class NotAuthorizedException(message: String) : Exception(message)
+
+/**
+ * Thrown when a requested operation was invalid and could not be completed.
+ */
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+class BadOperationException(message: String) : Exception(message)

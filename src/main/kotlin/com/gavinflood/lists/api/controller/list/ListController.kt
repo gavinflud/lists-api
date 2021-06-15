@@ -62,8 +62,6 @@ class ListController(
 
     /**
      * Update multiple lists under a board identified by [boardId] at once.
-     *
-     * TODO: Implement a single service function to do this and validate priorities
      */
     @PutMapping
     fun updateMultiple(
@@ -71,11 +69,9 @@ class ListController(
         @RequestBody updateListsDTO: UpdateMultipleListRequestDTO
     ): ResponseEntity<ApiResponse> {
         val board = boardService.findById(boardId)
-        updateListsDTO.lists.forEach { listDTO ->
-            val list = listService.findById(listDTO.id)
-            listService.update(list.id, listDTO.toEntity(board))
-        }
-        return ResponseEntity.ok(ApiResponse(null))
+        val updatedListsById = updateListsDTO.lists.associate { listDTO -> listDTO.id to listDTO.toEntity(board) }
+        val updatedLists = listService.updateMultiple(updatedListsById, board)
+        return Responses.ok(updatedLists.map { it.toResponseDTO() })
     }
 
     /**
