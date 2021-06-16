@@ -21,6 +21,9 @@ class Card(
     @Column(name = "due_date")
     var dueDate: Date,
 
+    @Column(name = "priority")
+    var priority: Int,
+
     @ManyToOne
     @JoinColumn(name = "list_id")
     var list: List

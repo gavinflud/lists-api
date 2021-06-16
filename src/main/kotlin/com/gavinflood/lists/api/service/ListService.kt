@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service
 
 /**
  * Business logic for lists.
+ *
+ * TODO: Handle priority correction on create/update/delete
  */
 @Service
 class ListService(
@@ -49,6 +51,8 @@ class ListService(
 
     /**
      * Find all lists under [board].
+     *
+     * TODO: Add pagination
      */
     fun findAllUnderBoard(board: Board): Collection<List> {
         boardService.checkCurrentUserIsAuthorizedToAccessBoard(board)
@@ -101,11 +105,7 @@ class ListService(
                     listRepository.save(existingList)
                 }.toSet()
         } catch (exception: NoMatchFoundException) {
-            logger.warn(
-                "Cannot update lists with IDs [${
-                    updatedListsById.keys.joinToString(",")
-                }] as one was not found"
-            )
+            logger.warn("Cannot update lists with IDs [${updatedListsById.keys.joinToString(",")}] as one was not found")
             throw exception
         }
     }
@@ -138,7 +138,7 @@ class ListService(
      * Validate that the current authenticated user is either a member of the team that owns [list] or is an
      * administrator.
      */
-    private fun checkCurrentUserIsAuthorizedToAccessList(list: List) {
+    fun checkCurrentUserIsAuthorizedToAccessList(list: List) {
         val currentUser = appUserService.getCurrentAuthenticatedUser()
 
         if (!list.board.team.members.contains(currentUser) && !userSecurity.isAdmin(currentUser)) {
