@@ -10,8 +10,6 @@ import java.util.*
  */
 data class CardRequestDTO(
     val title: String,
-    val description: String,
-    val dueDate: Date,
     val priority: Int,
     val listId: Long
 ) : BasicDTO {
@@ -20,7 +18,7 @@ data class CardRequestDTO(
      * Create [Card] from [CardRequestDTO].
      */
     fun toEntity(list: List): Card {
-        return Card(title, description, dueDate, priority, list)
+        return Card(title, priority, list)
     }
 
 }
@@ -31,17 +29,17 @@ data class CardRequestDTO(
 data class CardResponseDTO(
     val id: Long,
     val title: String,
-    val description: String,
-    val dueDate: Date,
     val priority: Int,
-    val listId: Long
+    val listId: Long,
+    val description: String?,
+    val dueDate: Date?
 ) : BasicDTO
 
 /**
  * Create [CardResponseDTO] from [List].
  */
 fun Card.toResponseDTO(): CardResponseDTO {
-    return CardResponseDTO(id, title, description, dueDate, priority, list.id)
+    return CardResponseDTO(id, title, priority, list.id, description, dueDate)
 }
 
 /**
@@ -50,17 +48,22 @@ fun Card.toResponseDTO(): CardResponseDTO {
 data class UpdateCardRequestDTO(
     val id: Long,
     val title: String,
-    val description: String,
-    val dueDate: Date,
     val priority: Int,
-    val listId: Long
+    val listId: Long,
+    val description: String?,
+    val dueDate: Date?
 ) : BasicDTO {
 
     /**
      * Create [Card] from [UpdateCardRequestDTO].
      */
     fun toEntity(list: List): Card {
-        return Card(title, description, dueDate, priority, list)
+        val description = description
+        val dueDate = dueDate
+        return Card(title, priority, list).apply {
+            this.description = description
+            this.dueDate = dueDate
+        }
     }
 
 }

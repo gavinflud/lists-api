@@ -15,12 +15,6 @@ class Card(
     @Column(name = "title")
     var title: String,
 
-    @Column(name = "description")
-    var description: String,
-
-    @Column(name = "due_date")
-    var dueDate: Date,
-
     @Column(name = "priority")
     var priority: Int,
 
@@ -28,4 +22,12 @@ class Card(
     @JoinColumn(name = "list_id")
     var list: List
 
-) : BaseEntity()
+) : BaseEntity() {
+
+    @Column(name = "description")
+    var description: String? = null
+
+    @Column(name = "due_date")
+    var dueDate: Date? = null
+
+}
