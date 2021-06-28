@@ -3,6 +3,8 @@ package com.gavinflood.lists.api.controller.team
 import com.gavinflood.lists.api.controller.Responses
 import com.gavinflood.lists.api.controller.dto.ApiResponse
 import com.gavinflood.lists.api.controller.user.toResponseDTO
+import com.gavinflood.lists.api.domain.AppUser
+import com.gavinflood.lists.api.service.AppUserService
 import com.gavinflood.lists.api.service.TeamService
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -14,7 +16,12 @@ import org.springframework.web.bind.annotation.*
  */
 @RestController
 @RequestMapping("/api/teams")
-class TeamController(private val teamService: TeamService) {
+class TeamController(
+
+    private val teamService: TeamService,
+    private val appUserService: AppUserService
+
+) {
 
     /**
      * Create a team with the data passed from the [dto] parameter. Once complete, the response should be a
@@ -63,6 +70,29 @@ class TeamController(private val teamService: TeamService) {
     @DeleteMapping("/{id}")
     fun retire(@PathVariable id: Long): ResponseEntity<ApiResponse> {
         return ResponseEntity.ok(ApiResponse(teamService.retire(id)))
+    }
+
+    /**
+     * Adds one or more users to the team identified by its [id].
+     */
+    @PutMapping("/{id}/members")
+    fun addMembers(@PathVariable id: Long, @RequestBody teamMembersDTO: TeamMembersDTO): ResponseEntity<ApiResponse> {
+        val users = teamMembersDTO.members.map { appUserService.loadUserByUsername(it.username) as AppUser }
+        val addedUsers = teamService.addMembers(id, users)
+        return Responses.ok(addedUsers.map { it.toResponseDTO() })
+    }
+
+    /**
+     * Removes one or more users from the team identified by its [id].
+     */
+    @DeleteMapping("/{id}/members")
+    fun removeMembers(
+        @PathVariable id: Long,
+        @RequestBody teamMembersDTO: TeamMembersDTO
+    ): ResponseEntity<ApiResponse> {
+        val users = teamMembersDTO.members.map { appUserService.loadUserByUsername(it.username) as AppUser }
+        val addedUsers = teamService.removeMembers(id, users)
+        return Responses.ok(addedUsers.map { it.toResponseDTO() })
     }
 
     /**

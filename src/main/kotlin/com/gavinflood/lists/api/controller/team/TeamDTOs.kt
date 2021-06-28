@@ -31,3 +31,15 @@ data class TeamResponseDTO(
 fun Team.toResponseDTO(): TeamResponseDTO {
     return TeamResponseDTO(id, name)
 }
+
+/**
+ * DTO that identifies a single team member.
+ */
+data class TeamMemberDTO(val username: String) : BasicDTO
+
+/**
+ * DTO for adding/removing team [members].
+ */
+data class TeamMembersDTO(val members: Set<TeamMemberDTO>) : BasicDTO {
+
+}

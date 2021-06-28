@@ -104,6 +104,42 @@ class TeamService(
     }
 
     /**
+     * Adds [users] to a team identified by [id].
+     *
+     * TODO: Add a team admin permission required to manage membership
+     */
+    fun addMembers(id: Long, users: Collection<AppUser>): Collection<AppUser> {
+        try {
+            val team = findById(id)
+            checkCurrentUserIsAuthorizedToAccessTeam(team)
+            team.members.addAll(users)
+            logger.info("Adding users [${users.map { it.id }.joinToString()}] to team '$id'")
+            return teamRepository.save(team).members
+        } catch (exception: NoMatchFoundException) {
+            logger.warn("Cannot add members to a team as none exists with the ID '$id'")
+            throw exception
+        }
+    }
+
+    /**
+     * Removes [users] from a team identified by [id].
+     *
+     * TODO: Ensure one member remains at all times
+     */
+    fun removeMembers(id: Long, users: Collection<AppUser>): Collection<AppUser> {
+        try {
+            val team = findById(id)
+            checkCurrentUserIsAuthorizedToAccessTeam(team)
+            team.members.removeAll(users)
+            logger.info("Removing users [${users.map { it.id }.joinToString()}] from team '$id'")
+            return teamRepository.save(team).members
+        } catch (exception: NoMatchFoundException) {
+            logger.warn("Cannot remove members from a team as none exists with the ID '$id'")
+            throw exception
+        }
+    }
+
+    /**
      * Validate that the current authenticated user is either a member of the [team] or is an administrator.
      */
     private fun checkCurrentUserIsAuthorizedToAccessTeam(team: Team) {
